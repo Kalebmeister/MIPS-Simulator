@@ -373,3 +373,194 @@ int main(int argc, char *argv[]) {
 	}
 	return 0;
 }
+/**************************************************************/
+/* ALU functions
+/**************************************************************/
+
+void ADD(int rs, int rt, int rd)
+{
+	R[1][rd] = R[1][rs] + R[1][rt];
+}
+void ADDU(int rs, int rt, int rd)
+{
+	unsigned int urs = (unsigned int)R[1][rs];
+	unsigned int urt = (unsigned int)R[1][rt];
+	unsigned int urd = (unsigned int)R[1][rd];
+	R[1][urd] = R[1][urs] + R[1][urt];
+}
+void ADDI(int rs, int rt, uint32_t address)
+{
+	int32_t value = mem_read_32(address);
+	R[1][rt] = R[1][rs] + value; 
+}
+void ADDUI(int rs, int rt, uint32_t address)
+{
+	uint32_t value = mem_read_32(address);
+	R[1][rt] = R[1][rs] + value;
+}
+void SUB(int rs, int rt, int rd)
+{
+	R[1][rd] = R[1][rs] - R[1][rt];
+}
+void SUBU(int rs, int rt, int rd)
+{
+	unsigned int urs = (unsigned int)R[1][rs];
+	unsigned int urt = (unsigned int)R[1][rt];
+	unsigned int urd = (unsigned int)R[1][rd];
+	R[1][urd] = R[1][urs] - R[1][urt];
+}
+void MULT(int rs, int rt, int rd)
+{
+	R[1][rd] = R[1][rs] * R[1][rt];
+}
+void MULTU(int rs, int rt, int rd)
+{
+	unsigned int urs = (unsigned int)R[1][rs];
+	unsigned int urt = (unsigned int)R[1][rt];
+	unsigned int urd = (unsigned int)R[1][rd];
+	R[1][urd] = R[1][urs] * R[1][urt];
+}
+void DIV(int rs, int rt, int rd)
+{
+	R[1][rd] = R[1][rs] % R[1][rt];
+}
+void DIVU(int rs, int rt, int rd)
+{
+	unsigned int urs = (unsigned int)R[1][rs];
+	unsigned int urt = (unsigned int)R[1][rt];
+	unsigned int urd = (unsigned int)R[1][rd];
+	R[1][urd] = R[1][urs] % R[1][urt];
+}
+void AND(int rs, int rt, int rd)
+{
+	R[1][rd] = R[1][rs] && R[1][rt];
+}
+void ANDI(int rs, int rt, uint32_t address)
+{
+	int32_t value = mem_read_32(address);
+	unsigned int urs = (unsigned int)R[1][rs];
+	unsigned int urt = (unsigned int)R[1][rt];
+	R[1][rt] = R[1][rs] && value;
+}
+void OR(int rs, int rt, int rd)
+{
+	R[1][rd] = R[1][rs] || R[1][rt];
+}
+void ORI(int rs, int rt, uint32_t address)
+{
+	int32_t value = mem_read_32(address);
+	unsigned int urs = (unsigned int)R[1][rs];
+	unsigned int urt = (unsigned int)R[1][rt];
+	R[1][rt] = R[1][rs] || value;
+}
+void XOR(int rs, int rt, int rd)
+{
+	R[1][rd] = ^(R[1][rs] || R[1][rt]);
+}
+void XORI(int rs, int rt, int rd)
+{
+	int32_t value = mem_read_32(address);
+	unsigned int urs = (unsigned int)R[1][rs];
+	unsigned int urt = (unsigned int)R[1][rt];
+	R[1][rd] = ^(R[1][rs] || value);
+}
+void NOR(int rs, int rt, int rd)
+{
+	R[1][rd] = ~(R[1][rs] || R[1][rt]);
+}
+void SLT(int rs, int rt, int rd)
+{
+	R[1][rd] = (R[1][rs] < R[1][rt]);
+}
+void SLTI(int rs, int rt, uint32_t address)
+{
+	int32_t value = mem_read_32(address);
+	unsigned int urs = (unsigned int)R[1][rs];
+	unsigned int urt = (unsigned int)R[1][rt];
+	R[1][rd] = (R[1][rs] < R[1][rt]);
+}
+void SLL(int rs, int rt, int shamt)
+{
+	R[1][rd] = R[1][rs] << R[1][shamt];
+}
+void SRL(int rs, int rt, int rd)
+{
+	R[1][rd] = R[1][rs] << R[1][rt];
+}
+void SRA(int rs, int rt, int rd)
+{
+	R[1][rd] = R[1][rs] >>> R[1][shamt];
+}
+
+/*****************************************************************/
+/* Load and store instructions
+/*****************************************************************/
+
+void LW()
+void LB()
+void LH()
+void LUI()
+void SW()
+void SB()
+void SH()
+void MFHI()
+void MFLO()
+
+
+/****************************************************************/
+/* Control Flow Instructions
+/****************************************************************/
+
+void BEQ()
+void BNE()
+void BLEZ()
+void BLTZ()
+void J()
+void JR()
+void JAL()
+void JALR()
+
+
+/***************************************************************/
+/* System call
+/***************************************************************/
+
+void()
+
+/**************************************************************/
+/* Register Selection
+/**************************************************************/
+
+void fill_reg()
+{
+	int i = 0;
+	string reg_call[32] = {"zero","at","v0","v1","a0","a1","a2","a3","t0","t1","t2","t3","t4","t5","t6","t7","s0","s1","s2","s3","s4","s5","s6","s7","t8","t9","k0","k1","gp","sp","fp","ra"};
+	while(i < 32)
+	{
+		R[0][i] = reg_call[i];
+		R[1][i] = 0;
+		i++;
+	}
+}
+
+void zero_reg()
+{
+	for(int i = 0; i < 32; i++)
+	{
+		R[1][i] = 0;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
