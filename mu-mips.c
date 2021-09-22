@@ -14,6 +14,56 @@
 // {"zero","at","v0","v1","a0","a1","a2","a3","t0","t1","t2","t3","t4","t5","t6","t7","s0","s1","s2","s3","s4","s5","s6","s7","t8","t9","k0","k1","gp","sp","fp","ra"};
 int R[32];
 
+//Opcodes / Funct codes
+// ALU
+#define ADD 	0x20
+#define ADDU	0x21
+#define ADDI	0x08
+#define	ADDIU	0x09
+#define SUB		0x22
+#define SUBU	0x23
+#define MULT	0x18
+#define MULTU	0x19
+#define DIV		0x1a
+#define DIVU	0x1b
+#define AND		0x24
+#define ANDI	0x08
+#define OR		0x25
+#define ORI		0x0d
+#define XOR		0x66
+#define XORI	0x4e
+#define NOR		0x27
+#define SLT		0x2a
+#define SLTI	0x0a
+#define SLL		0x00
+#define SRL		0x02
+#define SRA		0x03
+
+// Load/Store
+#define LW		0x23
+#define LB		0x20
+#define LH		0x21
+#define SW		0x2b
+#define SB		0x28
+#define SH		0x29
+#define MFHI	0x10
+#define MFLO	0x12
+#define MTHI	0x11
+#define MTLO	0x13
+
+// Control Flow
+
+#define BEQ		0x04
+#define BNE		0x05
+#define BLEZ	0x06
+//#define BLTZ	0x
+//#define BGEZ	0x do these even exist??
+#define BGTZ	0x07
+#define J		0x02
+#define JR		0x08
+#define JAL		0x03
+#define JALR	0x08
+
 
 /***************************************************************/
 /* Print out a list of commands available                                                                  */
@@ -314,8 +364,49 @@ void load_program() {
 /************************************************************/
 void handle_instruction()
 {
+	//int i;
+	//uint32_t addr = CURRENT_STATE;
+	
+	//if ( )
+
+		
+	
+
+
+
+
 	/*IMPLEMENT THIS*/
 	/* execute one instruction at a time. Use/update CURRENT_STATE and and NEXT_STATE, as necessary.*/
+}
+
+void parseInstruction(addr)
+{
+	
+	int opCode = mem_read_32(addr) >> 26;
+	int data = mem_read_32(addr);
+	//R-type format
+	if (opCode == 0)
+	{	
+		//shift and bit mask to get register values
+
+		int rs = (data >> 21) & 0x1f;
+		int rt = (data >> 16) & 0x1f;
+		int rd = (data >> 11) & 0x1f;
+		int sa = (data >> 6) & 0x1f;
+		int func = (data >> 0) & 0x1f;
+	
+		if (opCode == ADD)
+		{
+			add(rs,rt,rd);
+			printf("xyz =%d")
+		}
+	//I format
+	else {
+			int rs = (data >> 21) & 0x1f;
+			int rt = (data >> 16) & 0x1f;
+			int immediate = data & 0xFFFF;
+		}
+	}
 }
 
 
@@ -377,117 +468,117 @@ int main(int argc, char *argv[]) {
 	rs rd rt the int that will determine which temp variable value you are using
 ***********************************************/
 
-void ADD(int rs, int rt, int rd)
+void add(int rs, int rt, int rd)
 {
 	R[rd] = R[rs] + R[rt];
 }
-void ADDU(int rs, int rt, int rd)
+void addu(int rs, int rt, int rd)
 {
 	unsigned int urs = (unsigned int)R[rs];
 	unsigned int urt = (unsigned int)R[rt];
 	unsigned int urd = (unsigned int)R[rd];
 	R[urd] = R[urs] + R[urt];
 }
-void ADDI(int rs, int rt, uint32_t address)
+void addi(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
 	R[rt] = R[rs] + value; 
 }
-void ADDUI(int rs, int rt, uint32_t address)
+void addiu(int rs, int rt, uint32_t address)
 {
 	uint32_t value = mem_read_32(address);
 	R[rt] = R[rs] + value;
 }
-void SUB(int rs, int rt, int rd)
+void sub(int rs, int rt, int rd)
 {
 	R[rd] = R[rs] - R[rt];
 }
-void SUBU(int rs, int rt, int rd)
+void subu(int rs, int rt, int rd)
 {
 	unsigned int urs = (unsigned int)R[rs];
 	unsigned int urt = (unsigned int)R[rt];
 	unsigned int urd = (unsigned int)R[rd];
 	R[urd] = R[urs] - R[urt];
 }
-void MULT(int rs, int rt, int rd)
+void mult(int rs, int rt, int rd)
 {
 	R[rd] = R[rs] * R[rt];
 }
-void MULTU(int rs, int rt, int rd)
+void multu(int rs, int rt, int rd)
 {
 	unsigned int urs = (unsigned int)R[rs];
 	unsigned int urt = (unsigned int)R[rt];
 	unsigned int urd = (unsigned int)R[rd];
 	R[urd] = R[urs] * R[urt];
 }
-void DIV(int rs, int rt, int rd)
+void div(int rs, int rt, int rd)
 {
 	R[rd] = R[rs] % R[rt];
 }
-void DIVU(int rs, int rt, int rd)
+void divu(int rs, int rt, int rd)
 {
 	unsigned int urs = (unsigned int)R[rs];
 	unsigned int urt = (unsigned int)R[rt];
 	unsigned int urd = (unsigned int)R[rd];
 	R[urd] = R[urs] % R[urt];
 }
-void AND(int rs, int rt, int rd)
+void and(int rs, int rt, int rd)
 {
 	R[rd] = R[rs] && R[rt];
 }
-void ANDI(int rs, int rt, uint32_t address)
+void andi(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
 	unsigned int urs = (unsigned int)R[rs];
 	unsigned int urt = (unsigned int)R[rt];
 	R[urt] = R[urs] && value;
 }
-void OR(int rs, int rt, int rd)
+void or(int rs, int rt, int rd)
 {
 	R[rd] = R[rs] || R[rt];
 }
-void ORI(int rs, int rt, uint32_t address)
+void ori(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
 	unsigned int urs = (unsigned int)R[rs];
 	unsigned int urt = (unsigned int)R[rt];
 	R[urt] = R[urs] || value;
 }
-void XOR(int rs, int rt, int rd)
+void xor(int rs, int rt, int rd)
 {
 	R[rd] = (R[rs] ^ R[rt]);
 }
-void XORI(int rs, int rt, uint32_t address)
+void xori(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
 	unsigned int urs = (unsigned int)R[rs];
 	unsigned int urt = (unsigned int)R[rt];
 	R[urt] = (R[urs] ^ value);
 }
-void NOR(int rs, int rt, int rd)
+void nor(int rs, int rt, int rd)
 {
 	R[rd] = ~(R[rs] | R[rt]);
 }
-void SLT(int rs, int rt, int rd)
+void slt(int rs, int rt, int rd)
 {
 	R[rd] = (R[rs] < R[rt]);
 }
-void SLTI(int rs, int rt, uint32_t address)
+void slti(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
 	unsigned int urs = (unsigned int)R[rs];
 	unsigned int urt = (unsigned int)R[rt];
 	R[urt] = (R[urs] < value);
 }
-void SLL(int rs, int rt, int shamt)
+void sll(int rs, int rt, int shamt)
 {
 	R[rt] = R[rs] << R[shamt];
 }
-void SRL(int rs, int rt, int rd)
+void srl(int rs, int rt, int rd)
 {
 	R[rd] = R[rs] << R[rt];
 }
-void SRA(int rs, int rt, int shamt)
+void sra(int rs, int rt, int shamt)
 {
 	R[rt] = R[rs] >> R[shamt];
 }
@@ -496,29 +587,29 @@ void SRA(int rs, int rt, int shamt)
 /* Load and store instructions
 *****************************************************************/
 
-void LW();
-void LB();
-void LH();
-void LUI();
-void SW();
-void SB();
-void SH();
-void MFHI();
-void MFLO();
+void lw();
+void lb();
+void lh();
+void lui();
+void sw();
+void sb();
+void sh();
+void mfhi();
+void mflo();
 
 
 /****************************************************************/
 /* Control Flow Instructions
 ****************************************************************/
 
-void BEQ();
-void BNE();
-void BLEZ();
+void beq();
+void bne();
+void blez();
 void BLTZ();
-void J();
-void JR();
-void JAL();
-void JALR();
+void j();
+void jr();
+void jal();
+void jalr();
 
 
 /***************************************************************/
