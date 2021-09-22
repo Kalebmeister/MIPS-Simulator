@@ -394,7 +394,7 @@ void subu(int rs, int rt, int rd)
 	unsigned int urs = (unsigned int)R[rs];
 	unsigned int urt = (unsigned int)R[rt];
 	unsigned int urd = (unsigned int)R[rd];
-	R[urd] = R[urs] - R[urt];
+	R[urd] = R[urs] - R[urt]; 
 }
 void mult(int rs, int rt, int rd)
 {
@@ -483,15 +483,73 @@ void sra(int rs, int rt, int shamt)
 /* Load and store instructions
 *****************************************************************/
 
-void lw();
-void lb();
-void lh();
-void lui();
-void sw();
-void sb();
-void sh();
-void mfhi();
-void mflo();
+void lw(int rs, int rt, uint32_t address)
+{
+	int32_t value = mem_read_32(address);
+	unsigned short SignExtImmm = value & 0xFFFF;
+	R[rt] = R[rs] + SignExtImmm;
+
+}
+void lb(int rs, int rt, uint32_t address)
+{
+	 //R[rt] = {24'b0, M[R[rs] + SignExtImm](7:0)}
+	 int32_t value = mem_read_32(address);
+	 unsigned short SignExtImmm = value & 0xFFFF;
+	 unsigned int urs = (unsigned int)R[rs];
+	 unsigned int urt = (unsigned int)R[rt];
+	 R[rt] = R[rs] + SignExtImmm;
+	 R[rt] >> 24;
+
+}
+void lh(int rs, int rt, uint32_t address)
+{
+	//R[rt] = {16'b0, M[R[rs] + SignExtImm](15:0)}
+	int32_t value = mem_read_32(address);
+	unsigned short SignExtImmm = value & 0xFFFF;
+	R[rt] = R[rs] + SignExtImmm;
+	R[rt] >> 16;
+}
+void lui(int rt, uint32_t address)
+{
+	//R[rt] = {imm, 16'b0}
+	//$1 = 100x2^16
+	int32_t value = mem_read_32(address);
+	unsigned short SignExtImmm = value & 0xFFFF;
+	R[rt] = SignExtImmm >> 16;
+}
+void sw(int rs, int rt, uint32_t address)
+{
+	int32_t value = mem_read_32(address);
+	unsigned short SignExtImmm = value & 0xFFFF;
+	R[rt] = R[rs] + SignExtImmm;
+	//M[R[rs] + SignExtImm] = R[rt]
+}
+void sb(int rs, int rt, uint32_t address)
+{
+	//M[R[rs]+SignExtImm](7:0) = R[rt](7:0)
+	int32_t value = mem_read_32(address);
+	unsigned short SignExtImmm = value & 0xFFFF;
+	R[rt] = R[rs] + SignExtImmm;
+}
+void sh(int rs, int rt, uint32_t address)
+{
+	//M[R[rs]+SignExtImm](15:0) = R[rt](15:0)
+	int32_t value = mem_read_32(address);
+	unsigned short SignExtImmm = value & 0xFFFF;
+	R[rt] = R[rs] + SignExtImmm;
+}
+void mfhi(int rd, int HI)
+{
+	//R[rd] = Hi
+	R[rd] = R[HI];
+}
+void mflo(int rd, int LOW)
+{
+	//R[rd] = Lo
+	R[rd] = R[LOW];
+}
+
+
 
 
 /****************************************************************/
