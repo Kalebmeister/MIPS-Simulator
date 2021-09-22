@@ -359,110 +359,6 @@ void load_program() {
 	fclose(fp);
 }
 
-/************************************************************/
-/* decode and execute instruction                                                                     */ 
-/************************************************************/
-void handle_instruction()
-{
-	//int i;
-	//uint32_t addr = CURRENT_STATE;
-	
-	//if ( )
-
-		
-	
-
-
-
-
-	/*IMPLEMENT THIS*/
-	/* execute one instruction at a time. Use/update CURRENT_STATE and and NEXT_STATE, as necessary.*/
-}
-
-void parseInstruction(addr)
-{
-	
-	int opCode = mem_read_32(addr) >> 26;
-	int data = mem_read_32(addr);
-	//R-type format
-	if (opCode == 0)
-	{	
-		//shift and bit mask to get register values
-
-		int rs = (data >> 21) & 0x1f;
-		int rt = (data >> 16) & 0x1f;
-		int rd = (data >> 11) & 0x1f;
-		int sa = (data >> 6) & 0x1f;
-		int func = (data >> 0) & 0x1f;
-	
-		if (opCode == ADD)
-		{
-			add(rs,rt,rd);
-			printf("xyz =%d")
-		}
-	//I format
-	else {
-			int rs = (data >> 21) & 0x1f;
-			int rt = (data >> 16) & 0x1f;
-			int immediate = data & 0xFFFF;
-		}
-	}
-}
-
-
-/************************************************************/
-/* Initialize Memory                                                                                                    */ 
-/************************************************************/
-void initialize() { 
-	init_memory();
-	CURRENT_STATE.PC = MEM_TEXT_BEGIN;
-	NEXT_STATE = CURRENT_STATE;
-	RUN_FLAG = TRUE;
-}
-
-/************************************************************/
-/* Print the program loaded into memory (infMIPS assembly format)    */ 
-/************************************************************/
-void print_program(){
-	int i;
-	uint32_t addr;
-	
-	for(i=0; i<PROGRAM_SIZE; i++){
-		addr = MEM_TEXT_BEGIN + (i*4);
-		printf("[0x%x]\t", addr);
-		print_instruction(addr);
-	}
-}
-
-/************************************************************/
-/* Print the instruction at given memory address (in MIPS assembly format)    */
-/************************************************************/
-void print_instruction(uint32_t addr){
-	/*IMPLEMENT THIS*/
-}
-
-/***************************************************************/
-/* main                                                                                                                                   */
-/***************************************************************/
-int main(int argc, char *argv[]) {                              
-	printf("\n**************************\n");
-	printf("Welcome to MU-MIPS SIM...\n");
-	printf("**************************\n\n");
-	
-	if (argc < 2) {
-		printf("Error: You should provide input file.\nUsage: %s <input program> \n\n",  argv[0]);
-		exit(1);
-	}
-
-	strcpy(prog_file, argv[1]);
-	initialize();
-	load_program();
-	help();
-	while (1){
-		handle_command();
-	}
-	return 0;
-}
 /***********************************************
     ALU functions
 	rs rd rt the int that will determine which temp variable value you are using
@@ -511,7 +407,7 @@ void multu(int rs, int rt, int rd)
 	unsigned int urd = (unsigned int)R[rd];
 	R[urd] = R[urs] * R[urt];
 }
-void div(int rs, int rt, int rd)
+void div1(int rs, int rt, int rd)
 {
 	R[rd] = R[rs] % R[rt];
 }
@@ -641,3 +537,111 @@ void fill_reg()
 /* set the temp registers with the 
 ***********************************************************/
 
+
+
+
+
+/************************************************************/
+/* decode and execute instruction                                                                     */ 
+/************************************************************/
+void handle_instruction()
+{
+	//int i;
+	//uint32_t addr = CURRENT_STATE;
+	
+	//if ( )
+
+		
+	
+
+
+
+
+	/*IMPLEMENT THIS*/
+	/* execute one instruction at a time. Use/update CURRENT_STATE and and NEXT_STATE, as necessary.*/
+}
+
+void parseInstruction(uint32_t addr)
+{
+	
+	int opCode = mem_read_32(addr) >> 26;
+	int data = mem_read_32(addr);
+	//R-type format
+	if (opCode == 0)
+	{	
+		//shift and bit mask to get register values
+
+		int rs = (data >> 21) & 0x1f;
+		int rt = (data >> 16) & 0x1f;
+		int rd = (data >> 11) & 0x1f;
+		int sa = (data >> 6) & 0x1f;
+		int func = (data >> 0) & 0x1f;
+	
+		if (opCode == ADD)
+		{
+			add(rs,rt,rd);
+			//next state
+		}
+	//I format
+	else {
+			int rs = (data >> 21) & 0x1f;
+			int rt = (data >> 16) & 0x1f;
+			int immediate = data & 0xFFFF;
+		}
+	}
+}
+
+
+/************************************************************/
+/* Initialize Memory                                                                                                    */ 
+/************************************************************/
+void initialize() { 
+	init_memory();
+	CURRENT_STATE.PC = MEM_TEXT_BEGIN;
+	NEXT_STATE = CURRENT_STATE;
+	RUN_FLAG = TRUE;
+}
+
+/************************************************************/
+/* Print the program loaded into memory (infMIPS assembly format)    */ 
+/************************************************************/
+void print_program(){
+	int i;
+	uint32_t addr;
+	
+	for(i=0; i<PROGRAM_SIZE; i++){
+		addr = MEM_TEXT_BEGIN + (i*4);
+		printf("[0x%x]\t", addr);
+		print_instruction(addr);
+	}
+}
+
+/************************************************************/
+/* Print the instruction at given memory address (in MIPS assembly format)    */
+/************************************************************/
+void print_instruction(uint32_t addr){
+	/*IMPLEMENT THIS*/
+}
+
+/***************************************************************/
+/* main                                                                                                                                   */
+/***************************************************************/
+int main(int argc, char *argv[]) {                              
+	printf("\n**************************\n");
+	printf("Welcome to MU-MIPS SIM...\n");
+	printf("**************************\n\n");
+	
+	if (argc < 2) {
+		printf("Error: You should provide input file.\nUsage: %s <input program> \n\n",  argv[0]);
+		exit(1);
+	}
+
+	strcpy(prog_file, argv[1]);
+	initialize();
+	load_program();
+	help();
+	while (1){
+		handle_command();
+	}
+	return 0;
+}
