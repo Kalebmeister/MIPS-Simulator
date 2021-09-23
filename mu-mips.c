@@ -15,6 +15,7 @@
 int R[32];
 uint32_t HIGH;
 uint32_t LOW;
+char* RegNames[32][5]={"zero","at","v0","v1","a0","a1","a2","a3","t0","t1","t2","t3","t4","t5","t6","t7","s0","s1","s2","s3","s4","s5","s6","s7","t8","t9","k0","k1","gp","sp","fp","ra"};
 
 //Opcodes / Funct codes
 // ALU
@@ -398,22 +399,22 @@ void subu(int rs, int rt, int rd)
 	unsigned int urd = (unsigned int)R[rd];
 	R[urd] = R[urs] - R[urt]; 
 }
-void MULT(int rs, int rt, int rd)
+void mult(int rs, int rt, int rd)
 {
 	HIGH:LOW = R[rs] * R[rt];
 }
-void MULTU(int rs, int rt, int rd)
+void multu(int rs, int rt, int rd)
 {
 	unsigned int urt = (unsigned int)R[rt];
 	unsigned int urs = (unsigned int)R[rd];
 	HIGH:LOW = R[urs] * R[urt];
 }
-void DIV(int rs, int rt, int rd)
+void div1(int rs, int rt, int rd)
 {
 	HIGH = R[rs] % R[rt];
 	LOW = R[rs] / R[rt];
 }
-void DIVU(int rs, int rt, int rd)
+void divu(int rs, int rt, int rd)
 {
 	unsigned int urs = (unsigned int)R[rs];
 	unsigned int urt = (unsigned int)R[rt];
@@ -591,19 +592,19 @@ void bltz(int rs, int rt, int label)
 		CURRENT_STATE.PC = label;
 	}
 }
-void J(uint32_t j_address)
+void j(uint32_t j_address)
 {
 	CURRENT_STATE.PC = j_address; 
 }
-void JR(uint32_t j_address, int rs)
+void jr(uint32_t j_address, int rs)
 {
 	CURRENT_STATE.PC = R[rs];
 }
-void JAL(uint32_t j_address)
+void jal(uint32_t j_address)
 {
 	R[31] = CURRENT_STATE.PC + 8; CURRENT_STATE.PC = j_address;
 }
-void JALR(uint32_t j_address, int rs)
+void jalr(uint32_t j_address, int rs)
 {
 	R[31] = CURRENT_STATE.PC + 8; CURRENT_STATE.PC = R[rs];
 }
@@ -655,7 +656,7 @@ void handle_instruction()
 	//uint32_t addr = CURRENT_STATE;
 		
 	//parseInstruction(addr);
-	// CURRENT_STATE = NEXT_STATE;
+	//CURRENT_STATE = NEXT_STATE;
 
 
 
@@ -680,80 +681,82 @@ void parseInstruction(uint32_t addr)
 		int sa = (data >> 6) & 0x1f;
 		int func = (data >> 0) & 0x1f;
 	
-		if (opCode == ADD)
+		if (func == ADD)
 		{
 			add(rs,rt,rd);
 		}
-		else if (opCode == ADDU)
+		else if (func == ADDU)
 		{
 			addu(rs,rt,rd);
 
 		}
 		
-		else if (opCode == SUB)
+		else if (func == SUB)
 		{
 			sub(rs,rt,rd);
 
 		}
-		else if (opCode == SUBU)
+		else if (func == SUBU)
 		{
 			subu(rs,rt,rd);
 
 		}
-		else if (opCode == MULT)
+		else if (func == MULT)
 		{
 			mult(rs,rt,rd);
 
 		}
-		else if (opCode == MULTU)
+		else if (func == MULTU)
 		{
 			multu(rs,rt,rd);
 
 		}
-		else if (opCode == DIV)
+		else if (func == DIV)
 		{
 			div1(rs,rt,rd);
 
 		}
-		else if (opCode == DIVU)
+		else if (func == DIVU)
 		{
 			divu(rs,rt,rd);
 
 		}
-		else if (opCode == AND)
+		else if (func == AND)
 		{
 			and(rs,rt,rd);
 
 		}
-		else if (opCode == OR)
+		else if (func == OR)
 		{
 			or(rs,rt,rd);
 
 		}
-		else if (opCode == NOR)
+		else if (func == NOR)
 		{
 			nor(rs,rt,rd);
 		}
-		else if (opCode == SLT)
+		else if (func == SLT)
 		{
 			slt(rs,rt,rd);
 
 		}
-		else if (opCode == SLL)
+		else if (func == SLL)
 		{
-			sll(rs,rt,rd);
+			sll(rs,rt,sa);
 
 		}
-		else if (opCode == SRL)
+		else if (func == SRL)
 		{
 			srl(rs,rt,rd);
 
 		}
-		else if (opCode == SRA)
+		else if (func == SRA)
 		{
-			sra(rs,rt,rd);
+			sra(rs,rt,sa);
 
 		}
+		
+
 		
 	//I format
 	else {
@@ -791,6 +794,46 @@ void parseInstruction(uint32_t addr)
 			slti(rs,rt,immediate);
 
 			}
+			else if (opCode == LW)
+			{
+				lw(rs,rt,immediate);
+			}
+			else if (opCode == LB)
+			{
+				lb(rs,rt,immediate);
+			}
+			else if (opCode == LH)
+			{
+				lh(rs,rt,immediate);
+			}
+			else if (opCode == SW)
+			{
+				sw(rs,rt,immediate);
+			}
+			else if (opCode == SB)
+			{
+				sb(rs,rt,immediate);
+			}
+			else if (opCode == SH)
+			{
+				sh(rs,rt,immediate);
+			}
+			else if (opCode == MFHI)
+			{
+			//	mfhi(rd,HI);
+			}
+			else if (opCode == MFLO)
+			{
+				mflo(rd);
+			}
+			else if (opCode == MTHI)
+			{
+			//	mthi(rs,rt,immediate);
+			}
+			else if (opCode == MTLO)
+			{
+			//	mtlo(rs,rt,immediate);
+			}
 		}
 		}
 	}
@@ -825,9 +868,196 @@ void print_program(){
 /* Print the instruction at given memory address (in MIPS assembly format)    */
 /************************************************************/
 void print_instruction(uint32_t addr){
-	/*IMPLEMENT THIS*/
-}
+	
+	int opCode = mem_read_32(addr) >> 26;
+	int data = mem_read_32(addr);
 
+	//R-type format
+	if (opCode == 0)
+	{	
+		//shift and bit mask to get register values
+
+		int rs = (data >> 21) & 0x1f;
+		int rt = (data >> 16) & 0x1f;
+		int rd = (data >> 11) & 0x1f;
+		int sa = (data >> 6) & 0x1f;
+		int func = (data >> 0) & 0x1f;
+		int i=0;
+		if (func == ADD)
+		{
+			printf("ADD ");
+			
+			for(int i=0;i<5;i++)
+			{
+				if(*RegNames[rs][i] != '\0')
+				{
+				 printf("%s, ", RegNames[rs][i]);
+				}
+
+				if(*RegNames[rt][i] != '\0')
+				{
+				 printf("%s, ", RegNames[rt][i]);
+				}
+
+				if(*RegNames[rd][i] != '\0')
+				{
+				 printf("%s\n", RegNames[rd][i]);
+				}
+			}
+			
+		}
+		else if (func == ADDU)
+		{
+			addu(rs,rt,rd);
+
+		}
+		
+		else if (func == SUB)
+		{
+			sub(rs,rt,rd);
+
+		}
+		else if (func == SUBU)
+		{
+			subu(rs,rt,rd);
+
+		}
+		else if (func == MULT)
+		{
+			mult(rs,rt,rd);
+
+		}
+		else if (func == MULTU)
+		{
+			multu(rs,rt,rd);
+
+		}
+		else if (func == DIV)
+		{
+			div1(rs,rt,rd);
+
+		}
+		else if (func == DIVU)
+		{
+			divu(rs,rt,rd);
+
+		}
+		else if (func == AND)
+		{
+			and(rs,rt,rd);
+
+		}
+		else if (func == OR)
+		{
+			or(rs,rt,rd);
+
+		}
+		else if (func == NOR)
+		{
+			nor(rs,rt,rd);
+		}
+		else if (func == SLT)
+		{
+			slt(rs,rt,rd);
+
+		}
+		else if (func == SLL)
+		{
+			sll(rs,rt,sa);
+
+		}
+		else if (func == SRL)
+		{
+			srl(rs,rt,rd);
+
+		}
+		else if (func == SRA)
+		{
+			sra(rs,rt,sa);
+
+		}
+		
+
+		
+	//I format
+	else {
+			int rs = (data >> 21) & 0x1f;
+			int rt = (data >> 16) & 0x1f;
+			uint32_t immediate = data & 0xFFFF;
+
+			if (opCode == ADDI)
+			{	
+			addi(rs,rt,immediate);
+
+			}
+			else if (opCode == ANDI)
+			{
+			andi(rs,rt,immediate);
+
+			}
+			else if (opCode == ORI)
+			{
+			ori(rs,rt,immediate);
+
+			}
+			else if (opCode == XORI)
+			{
+			xori(rs,rt,immediate);
+
+			}
+			else if (opCode == ADDIU)
+			{
+			addiu(rs,rt,immediate);
+
+			}
+			else if (opCode == SLTI)
+			{
+			slti(rs,rt,immediate);
+
+			}
+			else if (opCode == LW)
+			{
+				lw(rs,rt,immediate);
+			}
+			else if (opCode == LB)
+			{
+				lb(rs,rt,immediate);
+			}
+			else if (opCode == LH)
+			{
+				lh(rs,rt,immediate);
+			}
+			else if (opCode == SW)
+			{
+				sw(rs,rt,immediate);
+			}
+			else if (opCode == SB)
+			{
+				sb(rs,rt,immediate);
+			}
+			else if (opCode == SH)
+			{
+				sh(rs,rt,immediate);
+			}
+			else if (opCode == MFHI)
+			{
+			//	mfhi(rd,HI);
+			}
+			else if (opCode == MFLO)
+			{
+				mflo(rd);
+			}
+			else if (opCode == MTHI)
+			{
+			//	mthi(rs,rt,immediate);
+			}
+			else if (opCode == MTLO)
+			{
+			//	mtlo(rs,rt,immediate);
+			}
+		}
+	}
+}
 /***************************************************************/
 /* main                                                                                                                                   */
 /***************************************************************/
