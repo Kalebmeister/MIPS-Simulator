@@ -648,10 +648,8 @@ void fill_reg()
 
 
 
-
-
-	/*IMPLEMENT THIS*/
-	/* execute one instruction at a time. Use/update CURRENT_STATE and and NEXT_STATE, as necessary.*/
+/*IMPLEMENT THIS*/
+/* execute one instruction at a time. Use/update CURRENT_STATE and and NEXT_STATE, as necessary.*/
 
 void parseInstruction(uint32_t addr)
 {
@@ -859,6 +857,7 @@ void print_program(){
 		addr = MEM_TEXT_BEGIN + (i*4);
 		printf("[0x%x]\t", addr);
 		print_instruction(addr);
+		printf("test!\n");
 	}
 }
 
@@ -869,6 +868,7 @@ void print_instruction(uint32_t addr){
 	
 	int opCode = mem_read_32(addr) >> 26;
 	int data = mem_read_32(addr);
+	printf("this is the data %d\n", data);
 
 	//R-type format
 	if (opCode == 0)
@@ -1163,8 +1163,6 @@ void print_instruction(uint32_t addr){
 		{
 			printf("SLL ");
 			
-			for(int i=0;i<5;i++)
-			{
 				if(*RegNames[rs][i] != '\0')
 				{
 				 printf("%s, ", RegNames[rs][i]);
@@ -1179,8 +1177,7 @@ void print_instruction(uint32_t addr){
 				{
 				 printf("%s\n", RegNames[rd][i]);
 				}
-			}
-
+				
 		}
 		else if (func == SRL)
 		{
