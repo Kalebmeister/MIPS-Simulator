@@ -606,12 +606,9 @@ void handle_instruction()
 {
 	//int i;
 	//uint32_t addr = CURRENT_STATE;
-	
-	//if ( )
-
 		
-	
-
+	//parseInstruction(addr);
+	// CURRENT_STATE = NEXT_STATE;
 
 
 
@@ -624,6 +621,7 @@ void parseInstruction(uint32_t addr)
 	
 	int opCode = mem_read_32(addr) >> 26;
 	int data = mem_read_32(addr);
+
 	//R-type format
 	if (opCode == 0)
 	{	
@@ -638,16 +636,118 @@ void parseInstruction(uint32_t addr)
 		if (opCode == ADD)
 		{
 			add(rs,rt,rd);
-			//next state
 		}
+		else if (opCode == ADDU)
+		{
+			addu(rs,rt,rd);
+
+		}
+		
+		else if (opCode == SUB)
+		{
+			sub(rs,rt,rd);
+
+		}
+		else if (opCode == SUBU)
+		{
+			subu(rs,rt,rd);
+
+		}
+		else if (opCode == MULT)
+		{
+			mult(rs,rt,rd);
+
+		}
+		else if (opCode == MULTU)
+		{
+			multu(rs,rt,rd);
+
+		}
+		else if (opCode == DIV)
+		{
+			div1(rs,rt,rd);
+
+		}
+		else if (opCode == DIVU)
+		{
+			divu(rs,rt,rd);
+
+		}
+		else if (opCode == AND)
+		{
+			and(rs,rt,rd);
+
+		}
+		else if (opCode == OR)
+		{
+			or(rs,rt,rd);
+
+		}
+		else if (opCode == NOR)
+		{
+			nor(rs,rt,rd);
+		}
+		else if (opCode == SLT)
+		{
+			slt(rs,rt,rd);
+
+		}
+		else if (opCode == SLL)
+		{
+			sll(rs,rt,rd);
+
+		}
+		else if (opCode == SRL)
+		{
+			srl(rs,rt,rd);
+
+		}
+		else if (opCode == SRA)
+		{
+			sra(rs,rt,rd);
+
+		}
+		
 	//I format
 	else {
 			int rs = (data >> 21) & 0x1f;
 			int rt = (data >> 16) & 0x1f;
-			int immediate = data & 0xFFFF;
+			uint32_t immediate = data & 0xFFFF;
+
+			if (opCode == ADDI)
+			{	
+			addi(rs,rt,immediate);
+
+			}
+			else if (opCode == ANDI)
+			{
+			andi(rs,rt,immediate);
+
+			}
+			else if (opCode == ORI)
+			{
+			ori(rs,rt,immediate);
+
+			}
+			else if (opCode == XORI)
+			{
+			xori(rs,rt,immediate);
+
+			}
+			else if (opCode == ADDIU)
+			{
+			addiu(rs,rt,immediate);
+
+			}
+			else if (opCode == SLTI)
+			{
+			slti(rs,rt,immediate);
+
+			}
+		}
 		}
 	}
-}
+
 
 
 /************************************************************/
