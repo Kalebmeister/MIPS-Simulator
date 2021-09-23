@@ -84,4 +84,29 @@ void handle_instruction(); /*IMPLEMENT THIS*/
 void initialize();
 void print_program(); /*IMPLEMENT THIS*/
 void print_instruction(uint32_t);
-
+void ADD(int rs, int rt, int rd);
+void ADDU(int rs, int rt, int rd);
+void ADDI(int rs, int rt, uint32_t address);
+void ADDUI(int rs, int rt, uint32_t address);
+void SUB(int rs, int rt, int rd);
+void SUBU(int rs, int rt, int rd);
+void MULT(int rs, int rt, int rd);
+void MULTU(int rs, int rt, int rd);
+void DIV(int rs, int rt, int rd);
+void DIVU(int rs, int rt, int rd);
+void AND(int rs, int rt, int rd);
+void ANDI(int rs, int rt, uint32_t address);
+void OR(int rs, int rt, int rd);
+void ORI(int rs, int rt, uint32_t address);
+void XOR(int rs, int rt, int rd);
+void XORI(int rs, int rt, uint32_t address);
+void NOR(int rs, int rt, int rd);
+void SLT(int rs, int rt, int rd);
+void SLTI(int rs, int rt, uint32_t address);
+void SLL(int rs, int rt, int shamt);
+void SRL(int rs, int rt, int rd);
+void SRA(int rs, int rt, int shamt);
+void J(uint32_t j_address);
+void JR(uint32_t j_address, int rs);
+void JAL(uint32_t j_address);
+void JALR(uint32_t j_address, int rs);
