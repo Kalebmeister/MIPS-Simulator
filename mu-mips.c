@@ -13,6 +13,8 @@
 // array R is holding the data of the temp registers since we dont know the address values the temp registers would have
 // {"zero","at","v0","v1","a0","a1","a2","a3","t0","t1","t2","t3","t4","t5","t6","t7","s0","s1","s2","s3","s4","s5","s6","s7","t8","t9","k0","k1","gp","sp","fp","ra"};
 int R[32];
+uint32_t HIGH;
+uint32_t LOW;
 
 //Opcodes / Funct codes
 // ALU
@@ -396,22 +398,22 @@ void subu(int rs, int rt, int rd)
 	unsigned int urd = (unsigned int)R[rd];
 	R[urd] = R[urs] - R[urt]; 
 }
-void mult(int rs, int rt, int rd)
+void MULT(int rs, int rt, int rd)
 {
-	R[rd] = R[rs] * R[rt];
+	HIGH:LOW = R[rs] * R[rt];
 }
-void multu(int rs, int rt, int rd)
+void MULTU(int rs, int rt, int rd)
 {
-	unsigned int urs = (unsigned int)R[rs];
 	unsigned int urt = (unsigned int)R[rt];
-	unsigned int urd = (unsigned int)R[rd];
-	R[urd] = R[urs] * R[urt];
+	unsigned int urs = (unsigned int)R[rd];
+	HIGH:LOW = R[urs] * R[urt];
 }
-void div1(int rs, int rt, int rd)
+void DIV(int rs, int rt, int rd)
 {
-	R[rd] = R[rs] % R[rt];
+	HIGH = R[rs] % R[rt];
+	LOW = R[rs] / R[rt];
 }
-void divu(int rs, int rt, int rd)
+void DIVU(int rs, int rt, int rd)
 {
 	unsigned int urs = (unsigned int)R[rs];
 	unsigned int urt = (unsigned int)R[rt];
@@ -560,10 +562,22 @@ void beq();
 void bne();
 void blez();
 void BLTZ();
-void j();
-void jr();
-void jal();
-void jalr();
+void J(uint32_t j_address)
+{
+	CURRENT_STATE.PC = j_address; 
+}
+void JR(uint32_t j_address, int rs)
+{
+	CURRENT_STATE.PC = R[rs];
+}
+void JAL(uint32_t j_address)
+{
+	R[31] = CURRENT_STATE.PC + 8; CURRENT_STATE.PC = j_address;
+}
+void JALR(uint32_t j_address, int rs)
+{
+	R[31] = CURRENT_STATE.PC + 8; CURRENT_STATE.PC = R[rs];
+}
 
 
 /***************************************************************/
