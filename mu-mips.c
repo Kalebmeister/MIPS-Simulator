@@ -399,13 +399,17 @@ void subu(int rs, int rt, int rd)
 }
 void mult(int rs, int rt, int rd)
 {
-	CURRENT_STATE.HIGH:CURRENT_STATE.LOW = R[rs] * R[rt];
+	int value = R[rs] * R[rt];
+	CURRENT_STATE.HIGH = 32 >> value;
+	CURRENT_STATE.LOW = 32 << value;
 }
 void multu(int rs, int rt, int rd)
 {
 	unsigned int urt = (unsigned int)R[rt];
 	unsigned int urs = (unsigned int)R[rd];
-	CURRENT_STATE.HIGH:CURRENT_STATE.LOW = R[urs] * R[urt];
+	int value = R[urs] * R[urt];
+	CURRENT_STATE.HIGH = 32 >> value;
+	CURRENT_STATE.LOW = 32 << value;
 }
 void div1(int rs, int rt, int rd)
 {
