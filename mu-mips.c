@@ -13,7 +13,7 @@
 // array R is holding the data of the temp registers since we dont know the address values the temp registers would have
 // {"zero","at","v0","v1","a0","a1","a2","a3","t0","t1","t2","t3","t4","t5","t6","t7","s0","s1","s2","s3","s4","s5","s6","s7","t8","t9","k0","k1","gp","sp","fp","ra"};
 int R[32];
-char* RegNames[32][5]={"zero","at","v0","v1","a0","a1","a2","a3","t0","t1","t2","t3","t4","t5","t6","t7","s0","s1","s2","s3","s4","s5","s6","s7","t8","t9","k0","k1","gp","sp","fp","ra"};
+char RegNames[32][5]={"zero","at","v0","v1","a0","a1","a2","a3","t0","t1","t2","t3","t4","t5","t6","t7","s0","s1","s2","s3","s4","s5","s6","s7","t8","t9","k0","k1","gp","sp","fp","ra"};
 
 //Opcodes / Funct codes
 // ALU
@@ -367,122 +367,122 @@ void load_program() {
 
 void add(int rs, int rt, int rd)
 {
-	R[rd] = R[rs] + R[rt];
+	R[rd-1] = R[rs-1] + R[rt-1];
 }
 void addu(int rs, int rt, int rd)
 {
-	unsigned int urs = (unsigned int)R[rs];
-	unsigned int urt = (unsigned int)R[rt];
-	unsigned int urd = (unsigned int)R[rd];
+	unsigned int urs = (unsigned int)R[rs-1];
+	unsigned int urt = (unsigned int)R[rt-1];
+	unsigned int urd = (unsigned int)R[rd-1];
 	R[urd] = R[urs] + R[urt];
 }
 void addi(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
-	R[rt] = R[rs] + value; 
+	R[rt-1] = R[rs-1] + value; 
 }
 void addiu(int rs, int rt, uint32_t address)
 {
 	uint32_t value = mem_read_32(address);
-	R[rt] = R[rs] + value;
+	R[rt-1] = R[rs-1] + value;
 }
 void sub(int rs, int rt, int rd)
 {
-	R[rd] = R[rs] - R[rt];
+	R[rd-1] = R[rs-1] - R[rt-1];
 }
 void subu(int rs, int rt, int rd)
 {
-	unsigned int urs = (unsigned int)R[rs];
-	unsigned int urt = (unsigned int)R[rt];
-	unsigned int urd = (unsigned int)R[rd];
+	unsigned int urs = (unsigned int)R[rs-1];
+	unsigned int urt = (unsigned int)R[rt-1];
+	unsigned int urd = (unsigned int)R[rd-1];
 	R[urd] = R[urs] - R[urt]; 
 }
 void mult(int rs, int rt, int rd)
 {
-	int value = R[rs] * R[rt];
+	int value = R[rs-1] * R[rt-1];
 	CURRENT_STATE.HI = 32 >> value;
 	CURRENT_STATE.LO = 32 << value;
 }
 void multu(int rs, int rt, int rd)
 {
-	unsigned int urt = (unsigned int)R[rt];
-	unsigned int urs = (unsigned int)R[rd];
+	unsigned int urt = (unsigned int)R[rt-1];
+	unsigned int urs = (unsigned int)R[rd-1];
 	int value = R[urs] * R[urt];
 	CURRENT_STATE.HI = 32 >> value;
 	CURRENT_STATE.LO = 32 << value;
 }
 void div1(int rs, int rt, int rd)
 {
-	CURRENT_STATE.HI = R[rs] % R[rt];
-	CURRENT_STATE.LO = R[rs] / R[rt];
+	CURRENT_STATE.HI = R[rs-1] % R[rt-1];
+	CURRENT_STATE.LO = R[rs-1] / R[rt-1];
 }
 void divu(int rs, int rt, int rd)
 {
-	unsigned int urs = (unsigned int)R[rs];
-	unsigned int urt = (unsigned int)R[rt];
-	unsigned int urd = (unsigned int)R[rd];
+	unsigned int urs = (unsigned int)R[rs-1];
+	unsigned int urt = (unsigned int)R[rt-1];
+	unsigned int urd = (unsigned int)R[rd-1];
 	CURRENT_STATE.HI = R[urs] % R[urt];
 	CURRENT_STATE.LO = R[urs] / R[urt];
 }
 void and(int rs, int rt, int rd)
 {
-	R[rd] = R[rs] && R[rt];
+	R[rd-1] = R[rs-1] && R[rt-1];
 }
 void andi(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
-	unsigned int urs = (unsigned int)R[rs];
-	unsigned int urt = (unsigned int)R[rt];
+	unsigned int urs = (unsigned int)R[rs-1];
+	unsigned int urt = (unsigned int)R[rt-1];
 	R[urt] = R[urs] && value;
 }
 void or(int rs, int rt, int rd)
 {
-	R[rd] = R[rs] || R[rt];
+	R[rd-1] = R[rs-1] || R[rt-1];
 }
 void ori(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
-	unsigned int urs = (unsigned int)R[rs];
-	unsigned int urt = (unsigned int)R[rt];
+	unsigned int urs = (unsigned int)R[rs-1];
+	unsigned int urt = (unsigned int)R[rt-1];
 	R[urt] = R[urs] || value;
 }
 void xor(int rs, int rt, int rd)
 {
-	R[rd] = (R[rs] ^ R[rt]);
+	R[rd-1] = (R[rs-1] ^ R[rt-1]);
 }
 void xori(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
-	unsigned int urs = (unsigned int)R[rs];
-	unsigned int urt = (unsigned int)R[rt];
+	unsigned int urs = (unsigned int)R[rs-1];
+	unsigned int urt = (unsigned int)R[rt-1];
 	R[urt] = (R[urs] ^ value);
 }
 void nor(int rs, int rt, int rd)
 {
-	R[rd] = ~(R[rs] | R[rt]);
+	R[rd-1] = ~(R[rs-1] | R[rt-1]);
 }
 void slt(int rs, int rt, int rd)
 {
-	R[rd] = (R[rs] < R[rt]);
+	R[rd-1] = (R[rs-1] < R[rt-1]);
 }
 void slti(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
-	unsigned int urs = (unsigned int)R[rs];
-	unsigned int urt = (unsigned int)R[rt];
+	unsigned int urs = (unsigned int)R[rs-1];
+	unsigned int urt = (unsigned int)R[rt-1];
 	R[urt] = (R[urs] < value);
 }
 void sll(int rs, int rt, int shamt)
 {
-	R[rt] = R[rs] << R[shamt];
+	R[rt-1] = R[rs-1] << R[shamt];
 }
 void srl(int rs, int rt, int rd)
 {
-	R[rd] = R[rs] << R[rt];
+	R[rd-1] = R[rs-1] << R[rt-1];
 }
 void sra(int rs, int rt, int shamt)
 {
-	R[rt] = R[rs] >> R[shamt];
+	R[rt-1] = R[rs-1] >> R[shamt];
 }
 
 /*****************************************************************/
@@ -493,68 +493,68 @@ void lw(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
 	unsigned short SignExtImmm = value & 0xFFFF;
-	R[rt] = R[rs] + SignExtImmm;
+	R[rt-1] = R[rs-1] + SignExtImmm;
 
 }
 void lb(int rs, int rt, uint32_t address)
 {
-	 //R[rt] = {24'b0, M[R[rs] + SignExtImm](7:0)}
+	 //R[rt-1] = {24'b0, M[R[rs-1] + SignExtImm](7:0)}
 	 int32_t value = mem_read_32(address);
 	 unsigned short SignExtImmm = value & 0xFFFF;
-	 unsigned int urs = (unsigned int)R[rs];
-	 unsigned int urt = (unsigned int)R[rt];
-	 R[rt] = R[rs] + SignExtImmm;
-	 R[rt] >> 24;
+	 unsigned int urs = (unsigned int)R[rs-1];
+	 unsigned int urt = (unsigned int)R[rt-1];
+	 R[rt-1] = R[rs-1] + SignExtImmm;
+	 R[rt-1] >> 24;
 }
 
 void lh(int rs, int rt, uint32_t address)
 {
-	//R[rt] = {16'b0, M[R[rs] + SignExtImm](15:0)}
+	//R[rt-1] = {16'b0, M[R[rs-1] + SignExtImm](15:0)}
 	int32_t value = mem_read_32(address);
 	unsigned short SignExtImmm = value & 0xFFFF;
 	//printf("This is %d\n", SignExtImmm);
-	R[rt] = R[rs] + SignExtImmm;
-	R[rt] >> 16;
+	R[rt-1] = R[rs-1] + SignExtImmm;
+	R[rt-1] >> 16;
 }
 void lui(int rt, uint32_t address)
 {
-	//R[rt] = {imm, 16'b0}
+	//R[rt-1] = {imm, 16'b0}
 	//$1 = 100x2^16
 	int32_t value = mem_read_32(address);
 	unsigned short SignExtImmm = value & 0xFFFF;
-	R[rt] = SignExtImmm >> 16;
+	R[rt-1] = SignExtImmm >> 16;
 }
 void sw(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
 	unsigned short SignExtImmm = value & 0xFFFF;
-	R[rt] = R[rs] + SignExtImmm;
-	//M[R[rs] + SignExtImm] = R[rt]
+	R[rt-1] = R[rs-1] + SignExtImmm;
+	//M[R[rs-1] + SignExtImm] = R[rt-1]
 }
 void sb(int rs, int rt, uint32_t address)
 {
-	//M[R[rs]+SignExtImm](7:0) = R[rt](7:0)
+	//M[R[rs-1]+SignExtImm](7:0) = R[rt-1](7:0)
 	int32_t value = mem_read_32(address);
 	unsigned short SignExtImmm = value & 0xFFFF;
-	R[rt] = R[rs] + SignExtImmm;
+	R[rt-1] = R[rs-1] + SignExtImmm;
 }
 void sh(int rs, int rt, uint32_t address)
 {
-	//M[R[rs]+SignExtImm](15:0) = R[rt](15:0)
+	//M[R[rs-1]+SignExtImm](15:0) = R[rt-1](15:0)
 	int32_t value = mem_read_32(address);
 	unsigned short SignExtImmm = value & 0xFFFF;
-	R[rt] = R[rs] + SignExtImmm;
+	R[rt-1] = R[rs-1] + SignExtImmm;
 }
 void mfhi(int rd)
 {
-	//R[rd] = Hi
-	R[rd] = CURRENT_STATE.HI;
+	//R[rd-1] = Hi
+	R[rd-1] = CURRENT_STATE.HI;
 }
 void mflo(int rd)
 {
-	//R[rd] = Lo
+	//R[rd-1] = Lo
 	
-	R[rd] = CURRENT_STATE.LO;
+	R[rd-1] = CURRENT_STATE.LO;
 }
 
 
@@ -566,14 +566,14 @@ void mflo(int rd)
 
 void beq(int rs, int rt, uint32_t b_address)
 {
-	if(R[rs] == R[rt])
+	if(R[rs-1] == R[rt-1])
 	{
 		CURRENT_STATE.PC = CURRENT_STATE.PC + 4 + b_address;
 	}
 }
 void bne(int rs, int rt, uint32_t b_address)
 {
-	if(R[rs] != R[rt])
+	if(R[rs-1] != R[rt-1])
 	{
 		CURRENT_STATE.PC = CURRENT_STATE.PC + 4 + b_address;
 
@@ -582,7 +582,7 @@ void bne(int rs, int rt, uint32_t b_address)
 void blez(int rs, int rt, int label)
 {
 	//ble
-	if(R[rs] <= R[rt])
+	if(R[rs-1] <= R[rt-1])
 	{
 		CURRENT_STATE.PC = label;
 	}
@@ -590,7 +590,7 @@ void blez(int rs, int rt, int label)
 void bltz(int rs, int rt, int label)
 {
 	//blt
-	if(R[rs] < R[rt])
+	if(R[rs-1] < R[rt-1])
 	{
 		CURRENT_STATE.PC = label;
 	}
@@ -601,7 +601,7 @@ void j(uint32_t j_address)
 }
 void jr(uint32_t j_address, int rs)
 {
-	CURRENT_STATE.PC = R[rs];
+	CURRENT_STATE.PC = R[rs-1];
 }
 void jal(uint32_t j_address)
 {
@@ -609,7 +609,7 @@ void jal(uint32_t j_address)
 }
 void jalr(uint32_t j_address, int rs)
 {
-	R[31] = CURRENT_STATE.PC + 8; CURRENT_STATE.PC = R[rs];
+	R[31] = CURRENT_STATE.PC + 8; CURRENT_STATE.PC = R[rs-1];
 }
 
 
@@ -648,8 +648,10 @@ void fill_reg()
 
 
 
-/*IMPLEMENT THIS*/
-/* execute one instruction at a time. Use/update CURRENT_STATE and and NEXT_STATE, as necessary.*/
+
+
+	/*IMPLEMENT THIS*/
+	/* execute one instruction at a time. Use/update CURRENT_STATE and and NEXT_STATE, as necessary.*/
 
 void parseInstruction(uint32_t addr)
 {
@@ -857,7 +859,6 @@ void print_program(){
 		addr = MEM_TEXT_BEGIN + (i*4);
 		printf("[0x%x]\t", addr);
 		print_instruction(addr);
-		printf("test!\n");
 	}
 }
 
@@ -868,7 +869,6 @@ void print_instruction(uint32_t addr){
 	
 	int opCode = mem_read_32(addr) >> 26;
 	int data = mem_read_32(addr);
-	printf("this is the data %d\n", data);
 
 	//R-type format
 	if (opCode == 0)
@@ -877,352 +877,132 @@ void print_instruction(uint32_t addr){
 
 		int rs = (data >> 21) & 0x1f;
 		int rt = (data >> 16) & 0x1f;
+		//printf("%d",rs);
 		int rd = (data >> 11) & 0x1f;
 		int sa = (data >> 6) & 0x1f;
 		int func = func << 26;
 		func = func >> 26;
-
 		int i=0;
 		if (func == ADD)
 		{
 			printf("ADD ");
-			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				if(*RegNames[rd][i] != '\0')
-				{
-				 printf("%s\n", RegNames[rd][i]);
-				}
-			}
-			
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%s\n", RegNames[rd-1]);	
 		}
 		else if (func == ADDU)
 		{
 			printf("ADDU ");
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%s\n", RegNames[rd-1]);
 			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				if(*RegNames[rd][i] != '\0')
-				{
-				 printf("%s\n", RegNames[rd][i]);
-				}
-			}
 
 		}
 		
 		else if (func == SUB)
 		{
 			printf("SUB ");
-			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				if(*RegNames[rd][i] != '\0')
-				{
-				 printf("%s\n", RegNames[rd][i]);
-				}
-			}
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%s\n", RegNames[rd-1]);
 
 		}
 		else if (func == SUBU)
 		{
 			printf("SUBU ");
-			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				if(*RegNames[rd][i] != '\0')
-				{
-				 printf("%s\n", RegNames[rd][i]);
-				}
-			}
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%s\n", RegNames[rd-1]);
 
 		}
 		else if (func == MULT)
 		{
 			printf("MULT ");
-			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				if(*RegNames[rd][i] != '\0')
-				{
-				 printf("%s\n", RegNames[rd][i]);
-				}
-			}
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%s\n", RegNames[rd-1]);
 
 		}
 		else if (func == MULTU)
 		{
 			printf("MULTU ");
-			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				if(*RegNames[rd][i] != '\0')
-				{
-				 printf("%s\n", RegNames[rd][i]);
-				}
-			}
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%s\n", RegNames[rd-1]);
 
 		}
 		else if (func == DIV)
 		{
 			printf("DIV ");
-			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				if(*RegNames[rd][i] != '\0')
-				{
-				 printf("%s\n", RegNames[rd][i]);
-				}
-			}
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%s\n", RegNames[rd-1]);
 
 		}
 		else if (func == DIVU)
 		{
 			printf("DIVU ");
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%s\n", RegNames[rd-1]);	
 			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				if(*RegNames[rd][i] != '\0')
-				{
-				 printf("%s\n", RegNames[rd][i]);
-				}
-			}
 
 		}
 		else if (func == AND)
 		{
 			printf("AND ");
-			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				if(*RegNames[rd][i] != '\0')
-				{
-				 printf("%s\n", RegNames[rd][i]);
-				}
-			}
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%s\n", RegNames[rd-1]);
 
 		}
 		else if (func == OR)
 		{
 			printf("OR ");
-			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				if(*RegNames[rd][i] != '\0')
-				{
-				 printf("%s\n", RegNames[rd][i]);
-				}
-			}
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%s\n", RegNames[rd-1]);
 
 		}
 		else if (func == NOR)
 		{
 			printf("NOR ");
-			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				if(*RegNames[rd][i] != '\0')
-				{
-				 printf("%s\n", RegNames[rd][i]);
-				}
-			}
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%s\n", RegNames[rd-1]);
 		}
 		else if (func == SLT)
 		{
 			printf("SLT ");
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%s\n", RegNames[rd-1]);
 			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				if(*RegNames[rd][i] != '\0')
-				{
-				 printf("%s\n", RegNames[rd][i]);
-				}
-			}
 
 		}
 		else if (func == SLL)
 		{
 			printf("SLL ");
-			
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%s\n", RegNames[rd-1]);
 
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				if(*RegNames[rd][i] != '\0')
-				{
-				 printf("%s\n", RegNames[rd][i]);
-				}
-				
 		}
 		else if (func == SRL)
 		{
 			printf("SRL ");
-			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				if(*RegNames[rd][i] != '\0')
-				{
-				 printf("%s\n", RegNames[rd][i]);
-				}
-			}
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%s\n", RegNames[rd-1]);
 
 		}
 		else if (func == SRA)
 		{
 			printf("SRA ");
-			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				if(*RegNames[rd][i] != '\0')
-				{
-				 printf("%s\n", RegNames[rd][i]);
-				}
-			}
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%s\n", RegNames[rd-1]);
 
 		}
 		
@@ -1237,247 +1017,92 @@ void print_instruction(uint32_t addr){
 			if (opCode == ADDI)
 			{	
 			printf("ADDI ");
-			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				 printf("%04x\n", immediate);
-				
-			}
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%04x\n", immediate);
 
 			}
 			else if (opCode == ANDI)
 			{
 			printf("ANDI ");
-			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				 printf("%04x\n", immediate);
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%04x\n", immediate);
 				
-			}
 
 			}
 			else if (opCode == ORI)
 			{
 			printf("ORI ");
-			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				 printf("%04x\n", immediate);
-				
-			}
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%04x\n", immediate);
 			}
 			else if (opCode == XORI)
 			{
 			printf("XORI ");
-			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				 printf("%04x\n", immediate);
-				
-			}
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%04x\n", immediate);
 
 			}
 			else if (opCode == ADDIU)
 			{
 			printf("ADDIU ");
-			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				 printf("%04x\n", immediate);
-				
-			}
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%04x\n", immediate);
 
 			}
 			else if (opCode == SLTI)
 			{
 			printf("SLTI ");
-			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				 printf("%04x\n", immediate);
-				
-			}
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%04x\n", immediate);
 
 			}
 			else if (opCode == LW)
 			{
 			printf("LW ");
-			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				 printf("%04x\n", immediate);
-				
-			}
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%04x\n", immediate);
 			}
 			else if (opCode == LB)
 			{
 			printf("LB ");
-			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				 printf("%04x\n", immediate);
-				
-			}
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%04x\n", immediate);
 			}
 			else if (opCode == LH)
 			{
 			printf("LH ");
-			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				 printf("%04x\n", immediate);
-				
-			}
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%04x\n", immediate);
 			}
 			else if (opCode == SW)
 			{
 			printf("SW ");
-			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				 printf("%04x\n", immediate);
-				
-			}
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%04x\n", immediate);
 			}
 			else if (opCode == SB)
 			{
 			printf("SB ");
-			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				 printf("%04x\n", immediate);
-				
-			}
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%04x\n", immediate);
 			}
 			else if (opCode == SH)
 			{
 			printf("SH ");
-			
-			for(int i=0;i<5;i++)
-			{
-				if(*RegNames[rs][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rs][i]);
-				}
-
-				if(*RegNames[rt][i] != '\0')
-				{
-				 printf("%s, ", RegNames[rt][i]);
-				}
-
-				 printf("%04x\n", immediate);
-				
-			}
+			printf("%s, ", RegNames[rs-1]);
+			printf("%s, ", RegNames[rt-1]);
+			printf("%04x\n", immediate);
 			}
 			else if (opCode == MFHI)
 			{
@@ -1485,7 +1110,7 @@ void print_instruction(uint32_t addr){
 			}
 			else if (opCode == MFLO)
 			{
-				mflo(rd);
+			//	mflo(rd);
 			}
 			else if (opCode == MTHI)
 			{
@@ -1514,7 +1139,6 @@ int main(int argc, char *argv[]) {
 	strcpy(prog_file, argv[1]);
 	initialize();
 	load_program();
-	lh(5,5,0x08);
 	help();
 	while (1){
 		handle_command();
