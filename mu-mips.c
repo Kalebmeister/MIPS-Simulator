@@ -13,8 +13,6 @@
 // array R is holding the data of the temp registers since we dont know the address values the temp registers would have
 // {"zero","at","v0","v1","a0","a1","a2","a3","t0","t1","t2","t3","t4","t5","t6","t7","s0","s1","s2","s3","s4","s5","s6","s7","t8","t9","k0","k1","gp","sp","fp","ra"};
 int R[32];
-uint32_t HIGH;
-uint32_t LOW;
 char* RegNames[32][5]={"zero","at","v0","v1","a0","a1","a2","a3","t0","t1","t2","t3","t4","t5","t6","t7","s0","s1","s2","s3","s4","s5","s6","s7","t8","t9","k0","k1","gp","sp","fp","ra"};
 
 //Opcodes / Funct codes
@@ -401,25 +399,26 @@ void subu(int rs, int rt, int rd)
 }
 void mult(int rs, int rt, int rd)
 {
-	HIGH:LOW = R[rs] * R[rt];
+	CURRENT_STATE.HIGH:CURRENT_STATE.LOW = R[rs] * R[rt];
 }
 void multu(int rs, int rt, int rd)
 {
 	unsigned int urt = (unsigned int)R[rt];
 	unsigned int urs = (unsigned int)R[rd];
-	HIGH:LOW = R[urs] * R[urt];
+	CURRENT_STATE.HIGH:CURRENT_STATE.LOW = R[urs] * R[urt];
 }
 void div1(int rs, int rt, int rd)
 {
-	HIGH = R[rs] % R[rt];
-	LOW = R[rs] / R[rt];
+	CURRENT_STATE_HIGH = R[rs] % R[rt];
+	CURRENT_STATE.LOW = R[rs] / R[rt];
 }
 void divu(int rs, int rt, int rd)
 {
 	unsigned int urs = (unsigned int)R[rs];
 	unsigned int urt = (unsigned int)R[rt];
 	unsigned int urd = (unsigned int)R[rd];
-	R[urd] = R[urs] % R[urt];
+	CURRENT_STATE.HIGH = R[urs] % R[urt];
+	CURRENT_STATE.LOW = R[urs] / R[urt];
 }
 void and(int rs, int rt, int rd)
 {
