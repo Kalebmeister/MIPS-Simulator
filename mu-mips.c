@@ -501,13 +501,14 @@ void lb(int rs, int rt, uint32_t address)
 	 unsigned int urt = (unsigned int)R[rt];
 	 R[rt] = R[rs] + SignExtImmm;
 	 R[rt] >> 24;
-
 }
+
 void lh(int rs, int rt, uint32_t address)
 {
 	//R[rt] = {16'b0, M[R[rs] + SignExtImm](15:0)}
 	int32_t value = mem_read_32(address);
 	unsigned short SignExtImmm = value & 0xFFFF;
+	//printf("This is %d\n", SignExtImmm);
 	R[rt] = R[rs] + SignExtImmm;
 	R[rt] >> 16;
 }
@@ -540,15 +541,16 @@ void sh(int rs, int rt, uint32_t address)
 	unsigned short SignExtImmm = value & 0xFFFF;
 	R[rt] = R[rs] + SignExtImmm;
 }
-void mfhi(int rd, int HI)
+void mfhi(int rd)
 {
 	//R[rd] = Hi
-	R[rd] = R[HI];
+	R[rd] = CURRENT_STATE.HI;
 }
-void mflo(int rd, int LOW)
+void mflo(int rd)
 {
 	//R[rd] = Lo
-	R[rd] = R[LOW];
+	
+	R[rd] = CURRENT_STATE.LO;
 }
 
 
@@ -558,10 +560,37 @@ void mflo(int rd, int LOW)
 /* Control Flow Instructions
 ****************************************************************/
 
-void beq();
-void bne();
-void blez();
-void BLTZ();
+void beq(int rs, int rt, uint32_t b_address)
+{
+	if(R[rs] == R[rt])
+	{
+		CURRENT_STATE.PC = CURRENT_STATE.PC + 4 + b_address;
+	}
+}
+void bne(int rs, int rt, uint32_t b_address)
+{
+	if(R[rs] != R[rt])
+	{
+		CURRENT_STATE.PC = CURRENT_STATE.PC + 4 + b_address;
+
+	}
+}
+void blez(int rs, int rt, int label)
+{
+	//ble
+	if(R[rs] <= R[rt])
+	{
+		CURRENT_STATE.PC = label;
+	}
+}
+void bltz(int rs, int rt, int label)
+{
+	//blt
+	if(R[rs] < R[rt])
+	{
+		CURRENT_STATE.PC = label;
+	}
+}
 void J(uint32_t j_address)
 {
 	CURRENT_STATE.PC = j_address; 
@@ -811,6 +840,7 @@ int main(int argc, char *argv[]) {
 	strcpy(prog_file, argv[1]);
 	initialize();
 	load_program();
+	lh(5,5,0x08);
 	help();
 	while (1){
 		handle_command();
