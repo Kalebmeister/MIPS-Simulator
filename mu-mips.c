@@ -400,29 +400,29 @@ void subu(int rs, int rt, int rd)
 void mult(int rs, int rt, int rd)
 {
 	int value = R[rs] * R[rt];
-	CURRENT_STATE.HIGH = 32 >> value;
-	CURRENT_STATE.LOW = 32 << value;
+	CURRENT_STATE.HI = 32 >> value;
+	CURRENT_STATE.LO = 32 << value;
 }
 void multu(int rs, int rt, int rd)
 {
 	unsigned int urt = (unsigned int)R[rt];
 	unsigned int urs = (unsigned int)R[rd];
 	int value = R[urs] * R[urt];
-	CURRENT_STATE.HIGH = 32 >> value;
-	CURRENT_STATE.LOW = 32 << value;
+	CURRENT_STATE.HI = 32 >> value;
+	CURRENT_STATE.LO = 32 << value;
 }
 void div1(int rs, int rt, int rd)
 {
-	CURRENT_STATE_HIGH = R[rs] % R[rt];
-	CURRENT_STATE.LOW = R[rs] / R[rt];
+	CURRENT_STATE_HI = R[rs] % R[rt];
+	CURRENT_STATE.LO = R[rs] / R[rt];
 }
 void divu(int rs, int rt, int rd)
 {
 	unsigned int urs = (unsigned int)R[rs];
 	unsigned int urt = (unsigned int)R[rt];
 	unsigned int urd = (unsigned int)R[rd];
-	CURRENT_STATE.HIGH = R[urs] % R[urt];
-	CURRENT_STATE.LOW = R[urs] / R[urt];
+	CURRENT_STATE.HI = R[urs] % R[urt];
+	CURRENT_STATE.LO = R[urs] / R[urt];
 }
 void and(int rs, int rt, int rd)
 {
