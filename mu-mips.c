@@ -655,8 +655,8 @@ void handle_instruction()
 	//int i;
 	//uint32_t addr = CURRENT_STATE;
 		
-	//parseInstruction(addr);
-	//CURRENT_STATE = NEXT_STATE;
+	parseInstruction(addr);
+	CURRENT_STATE = NEXT_STATE;
 
 
 
@@ -883,7 +883,7 @@ void print_instruction(uint32_t addr){
 		int sa = (data >> 6) & 0x1f;
 		int func = func << 26;
 		func = func >> 26;
-		
+
 		int i=0;
 		if (func == ADD)
 		{
