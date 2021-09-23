@@ -413,7 +413,7 @@ void multu(int rs, int rt, int rd)
 }
 void div1(int rs, int rt, int rd)
 {
-	CURRENT_STATE_HI = R[rs] % R[rt];
+	CURRENT_STATE.HI = R[rs] % R[rt];
 	CURRENT_STATE.LO = R[rs] / R[rt];
 }
 void divu(int rs, int rt, int rd)
@@ -650,22 +650,8 @@ void fill_reg()
 
 
 
-/************************************************************/
-/* decode and execute instruction                                                                     */ 
-/************************************************************/
-void handle_instruction()
-{
-	//int i;
-	//uint32_t addr = CURRENT_STATE;
-		
-	parseInstruction(addr);
-	CURRENT_STATE = NEXT_STATE;
-
-
-
 	/*IMPLEMENT THIS*/
 	/* execute one instruction at a time. Use/update CURRENT_STATE and and NEXT_STATE, as necessary.*/
-}
 
 void parseInstruction(uint32_t addr)
 {
@@ -840,9 +826,18 @@ void parseInstruction(uint32_t addr)
 		}
 		}
 	}
+/************************************************************/
+/* decode and execute instruction                                                                     */ 
+/************************************************************/
+void handle_instruction()
+{
+	//int i;
+	uint32_t addr;
+		
+	parseInstruction(addr);
+	CURRENT_STATE = NEXT_STATE;
 
-
-
+}
 /************************************************************/
 /* Initialize Memory                                                                                                    */ 
 /************************************************************/
@@ -858,7 +853,7 @@ void initialize() {
 /************************************************************/
 void print_program(){
 	int i;
-	uint32_t addr;
+	uint32_t addr = mem_read_32(addr);
 	
 	for(i=0; i<PROGRAM_SIZE; i++){
 		addr = MEM_TEXT_BEGIN + (i*4);
