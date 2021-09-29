@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <assert.h>
+#include <inttypes.h>
 
 #include "mu-mips.h"
 
@@ -367,122 +368,122 @@ void load_program() {
 
 void add(int rs, int rt, int rd)
 {
-	R[rd-1] = R[rs-1] + R[rt-1];
+	R[rd] = R[rs] + R[rt];
 }
 void addu(int rs, int rt, int rd)
 {
-	unsigned int urs = (unsigned int)R[rs-1];
-	unsigned int urt = (unsigned int)R[rt-1];
-	unsigned int urd = (unsigned int)R[rd-1];
+	unsigned int urs = (unsigned int)R[rs];
+	unsigned int urt = (unsigned int)R[rt];
+	unsigned int urd = (unsigned int)R[rd];
 	R[urd] = R[urs] + R[urt];
 }
 void addi(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
-	R[rt-1] = R[rs-1] + value; 
+	R[rt] = R[rs] + value; 
 }
 void addiu(int rs, int rt, uint32_t address)
 {
 	uint32_t value = mem_read_32(address);
-	R[rt-1] = R[rs-1] + value;
+	R[rt] = R[rs] + value;
 }
 void sub(int rs, int rt, int rd)
 {
-	R[rd-1] = R[rs-1] - R[rt-1];
+	R[rd] = R[rs] - R[rt];
 }
 void subu(int rs, int rt, int rd)
 {
-	unsigned int urs = (unsigned int)R[rs-1];
-	unsigned int urt = (unsigned int)R[rt-1];
-	unsigned int urd = (unsigned int)R[rd-1];
+	unsigned int urs = (unsigned int)R[rs];
+	unsigned int urt = (unsigned int)R[rt];
+	unsigned int urd = (unsigned int)R[rd];
 	R[urd] = R[urs] - R[urt]; 
 }
 void mult(int rs, int rt, int rd)
 {
-	int value = R[rs-1] * R[rt-1];
+	int value = R[rs] * R[rt];
 	CURRENT_STATE.HI = 32 >> value;
 	CURRENT_STATE.LO = 32 << value;
 }
 void multu(int rs, int rt, int rd)
 {
-	unsigned int urt = (unsigned int)R[rt-1];
-	unsigned int urs = (unsigned int)R[rd-1];
+	unsigned int urt = (unsigned int)R[rt];
+	unsigned int urs = (unsigned int)R[rd];
 	int value = R[urs] * R[urt];
 	CURRENT_STATE.HI = 32 >> value;
 	CURRENT_STATE.LO = 32 << value;
 }
 void div1(int rs, int rt, int rd)
 {
-	CURRENT_STATE.HI = R[rs-1] % R[rt-1];
-	CURRENT_STATE.LO = R[rs-1] / R[rt-1];
+	CURRENT_STATE.HI = R[rs] % R[rt];
+	CURRENT_STATE.LO = R[rs] / R[rt];
 }
 void divu(int rs, int rt, int rd)
 {
-	unsigned int urs = (unsigned int)R[rs-1];
-	unsigned int urt = (unsigned int)R[rt-1];
-	unsigned int urd = (unsigned int)R[rd-1];
+	unsigned int urs = (unsigned int)R[rs];
+	unsigned int urt = (unsigned int)R[rt];
+	unsigned int urd = (unsigned int)R[rd];
 	CURRENT_STATE.HI = R[urs] % R[urt];
 	CURRENT_STATE.LO = R[urs] / R[urt];
 }
 void and(int rs, int rt, int rd)
 {
-	R[rd-1] = R[rs-1] && R[rt-1];
+	R[rd] = R[rs] && R[rt];
 }
 void andi(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
-	unsigned int urs = (unsigned int)R[rs-1];
-	unsigned int urt = (unsigned int)R[rt-1];
+	unsigned int urs = (unsigned int)R[rs];
+	unsigned int urt = (unsigned int)R[rt];
 	R[urt] = R[urs] && value;
 }
 void or(int rs, int rt, int rd)
 {
-	R[rd-1] = R[rs-1] || R[rt-1];
+	R[rd] = R[rs] || R[rt];
 }
 void ori(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
-	unsigned int urs = (unsigned int)R[rs-1];
-	unsigned int urt = (unsigned int)R[rt-1];
+	unsigned int urs = (unsigned int)R[rs];
+	unsigned int urt = (unsigned int)R[rt];
 	R[urt] = R[urs] || value;
 }
 void xor(int rs, int rt, int rd)
 {
-	R[rd-1] = (R[rs-1] ^ R[rt-1]);
+	R[rd] = (R[rs] ^ R[rt]);
 }
 void xori(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
-	unsigned int urs = (unsigned int)R[rs-1];
-	unsigned int urt = (unsigned int)R[rt-1];
+	unsigned int urs = (unsigned int)R[rs];
+	unsigned int urt = (unsigned int)R[rt];
 	R[urt] = (R[urs] ^ value);
 }
 void nor(int rs, int rt, int rd)
 {
-	R[rd-1] = ~(R[rs-1] | R[rt-1]);
+	R[rd] = ~(R[rs] | R[rt]);
 }
 void slt(int rs, int rt, int rd)
 {
-	R[rd-1] = (R[rs-1] < R[rt-1]);
+	R[rd] = (R[rs] < R[rt]);
 }
 void slti(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
-	unsigned int urs = (unsigned int)R[rs-1];
-	unsigned int urt = (unsigned int)R[rt-1];
+	unsigned int urs = (unsigned int)R[rs];
+	unsigned int urt = (unsigned int)R[rt];
 	R[urt] = (R[urs] < value);
 }
 void sll(int rs, int rt, int shamt)
 {
-	R[rt-1] = R[rs-1] << R[shamt];
+	R[rt] = R[rs] << R[shamt];
 }
 void srl(int rs, int rt, int rd)
 {
-	R[rd-1] = R[rs-1] << R[rt-1];
+	R[rd] = R[rs] << R[rt];
 }
 void sra(int rs, int rt, int shamt)
 {
-	R[rt-1] = R[rs-1] >> R[shamt];
+	R[rt] = R[rs] >> R[shamt];
 }
 
 /*****************************************************************/
@@ -493,7 +494,7 @@ void lw(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
 	unsigned short SignExtImmm = value & 0xFFFF;
-	R[rt-1] = R[rs-1] + SignExtImmm;
+	R[rt] = R[rs] + SignExtImmm;
 
 }
 void lb(int rs, int rt, uint32_t address)
@@ -501,10 +502,10 @@ void lb(int rs, int rt, uint32_t address)
 	 //R[rt-1] = {24'b0, M[R[rs-1] + SignExtImm](7:0)}
 	 int32_t value = mem_read_32(address);
 	 unsigned short SignExtImmm = value & 0xFFFF;
-	 unsigned int urs = (unsigned int)R[rs-1];
-	 unsigned int urt = (unsigned int)R[rt-1];
-	 R[rt-1] = R[rs-1] + SignExtImmm;
-	 R[rt-1] >> 24;
+	 unsigned int urs = (unsigned int)R[rs];
+	 unsigned int urt = (unsigned int)R[rt];
+	 R[rt] = R[rs] + SignExtImmm;
+	 R[rt] >> 24;
 }
 
 void lh(int rs, int rt, uint32_t address)
@@ -513,8 +514,8 @@ void lh(int rs, int rt, uint32_t address)
 	int32_t value = mem_read_32(address);
 	unsigned short SignExtImmm = value & 0xFFFF;
 	//printf("This is %d\n", SignExtImmm);
-	R[rt-1] = R[rs-1] + SignExtImmm;
-	R[rt-1] >> 16;
+	R[rt] = R[rs] + SignExtImmm;
+	R[rt] >> 16;
 }
 void lui(int rt, uint32_t address)
 {
@@ -522,13 +523,13 @@ void lui(int rt, uint32_t address)
 	//$1 = 100x2^16
 	int32_t value = mem_read_32(address);
 	unsigned short SignExtImmm = value & 0xFFFF;
-	R[rt-1] = SignExtImmm >> 16;
+	R[rt] = SignExtImmm >> 16;
 }
 void sw(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
 	unsigned short SignExtImmm = value & 0xFFFF;
-	R[rt-1] = R[rs-1] + SignExtImmm;
+	R[rt] = R[rs] + SignExtImmm;
 	//M[R[rs-1] + SignExtImm] = R[rt-1]
 }
 void sb(int rs, int rt, uint32_t address)
@@ -536,25 +537,25 @@ void sb(int rs, int rt, uint32_t address)
 	//M[R[rs-1]+SignExtImm](7:0) = R[rt-1](7:0)
 	int32_t value = mem_read_32(address);
 	unsigned short SignExtImmm = value & 0xFFFF;
-	R[rt-1] = R[rs-1] + SignExtImmm;
+	R[rt] = R[rs] + SignExtImmm;
 }
 void sh(int rs, int rt, uint32_t address)
 {
 	//M[R[rs-1]+SignExtImm](15:0) = R[rt-1](15:0)
 	int32_t value = mem_read_32(address);
 	unsigned short SignExtImmm = value & 0xFFFF;
-	R[rt-1] = R[rs-1] + SignExtImmm;
+	R[rt] = R[rs] + SignExtImmm;
 }
 void mfhi(int rd)
 {
 	//R[rd-1] = Hi
-	R[rd-1] = CURRENT_STATE.HI;
+	R[rd] = CURRENT_STATE.HI;
 }
 void mflo(int rd)
 {
-	//R[rd-1] = Lo
+	//R[rd] = Lo
 	
-	R[rd-1] = CURRENT_STATE.LO;
+	R[rd] = CURRENT_STATE.LO;
 }
 
 
@@ -566,14 +567,14 @@ void mflo(int rd)
 
 void beq(int rs, int rt, uint32_t b_address)
 {
-	if(R[rs-1] == R[rt-1])
+	if(R[rs] == R[rt])
 	{
 		CURRENT_STATE.PC = CURRENT_STATE.PC + 4 + b_address;
 	}
 }
 void bne(int rs, int rt, uint32_t b_address)
 {
-	if(R[rs-1] != R[rt-1])
+	if(R[rs] != R[rt])
 	{
 		CURRENT_STATE.PC = CURRENT_STATE.PC + 4 + b_address;
 
@@ -582,7 +583,7 @@ void bne(int rs, int rt, uint32_t b_address)
 void blez(int rs, int rt, int label)
 {
 	//ble
-	if(R[rs-1] <= R[rt-1])
+	if(R[rs] <= R[rt])
 	{
 		CURRENT_STATE.PC = label;
 	}
@@ -590,7 +591,7 @@ void blez(int rs, int rt, int label)
 void bltz(int rs, int rt, int label)
 {
 	//blt
-	if(R[rs-1] < R[rt-1])
+	if(R[rs] < R[rt])
 	{
 		CURRENT_STATE.PC = label;
 	}
@@ -601,7 +602,7 @@ void j(uint32_t j_address)
 }
 void jr(uint32_t j_address, int rs)
 {
-	CURRENT_STATE.PC = R[rs-1];
+	CURRENT_STATE.PC = R[rs];
 }
 void jal(uint32_t j_address)
 {
@@ -609,7 +610,7 @@ void jal(uint32_t j_address)
 }
 void jalr(uint32_t j_address, int rs)
 {
-	R[31] = CURRENT_STATE.PC + 8; CURRENT_STATE.PC = R[rs-1];
+	R[31] = CURRENT_STATE.PC + 8; CURRENT_STATE.PC = R[rs];
 }
 
 
@@ -745,8 +746,8 @@ void parseInstruction(uint32_t addr)
 
 		}
 		
-
-		
+	}
+	
 	//I format
 	else {
 			int rs = (data >> 21) & 0x1f;
@@ -813,7 +814,7 @@ void parseInstruction(uint32_t addr)
 			}
 			else if (opCode == MFLO)
 			{
-				mflo(rd);
+			//	mflo(rd);
 			}
 			else if (opCode == MTHI)
 			{
@@ -824,8 +825,8 @@ void parseInstruction(uint32_t addr)
 			//	mtlo(rs,rt,immediate);
 			}
 		}
-		}
-	}
+		
+}
 /************************************************************/
 /* decode and execute instruction                                                                     */ 
 /************************************************************/
@@ -869,7 +870,8 @@ void print_instruction(uint32_t addr){
 	
 	int opCode = mem_read_32(addr) >> 26;
 	int data = mem_read_32(addr);
-
+	//printf("data" "%d" "\n ",data);
+	//printf("opcode" "%d" "\n ",opCode);
 	//R-type format
 	if (opCode == 0)
 	{	
@@ -880,8 +882,11 @@ void print_instruction(uint32_t addr){
 		//printf("%d",rs);
 		int rd = (data >> 11) & 0x1f;
 		int sa = (data >> 6) & 0x1f;
-		int func = func << 26;
-		func = func >> 26;
+		int func = data & 0x3f;
+		//printf("%d\n",data);
+		//printf("%d",func);
+		//func = func >> 26;
+		//printf("function:" "%d" "\n" ,func);
 		int i=0;
 		if (func == ADD)
 		{
@@ -1007,12 +1012,12 @@ void print_instruction(uint32_t addr){
 		}
 		
 
-		
+	}
 	//I format
 	else {
 			int rs = (data >> 21) & 0x1f;
 			int rt = (data >> 16) & 0x1f;
-			uint32_t immediate = data & 0xFFFF;
+			int immediate = data & 0xFFFF;
 
 			if (opCode == ADDI)
 			{	
@@ -1121,7 +1126,7 @@ void print_instruction(uint32_t addr){
 			//	mtlo(rs,rt,immediate);
 			}
 		}
-	}
+	
 }
 /***************************************************************/
 /* main                                                                                                                                   */
