@@ -3,7 +3,6 @@
 #include <string.h>
 #include <stdint.h>
 #include <assert.h>
-#include <inttypes.h>
 
 #include "mu-mips.h"
 
@@ -13,7 +12,7 @@
 
 // array R is holding the data of the temp registers since we dont know the address values the temp registers would have
 // {"zero","at","v0","v1","a0","a1","a2","a3","t0","t1","t2","t3","t4","t5","t6","t7","s0","s1","s2","s3","s4","s5","s6","s7","t8","t9","k0","k1","gp","sp","fp","ra"};
-int R[32];
+//int R[32];
 char RegNames[32][5]={"zero","at","v0","v1","a0","a1","a2","a3","t0","t1","t2","t3","t4","t5","t6","t7","s0","s1","s2","s3","s4","s5","s6","s7","t8","t9","k0","k1","gp","sp","fp","ra"};
 
 //Opcodes / Funct codes
@@ -52,6 +51,8 @@ char RegNames[32][5]={"zero","at","v0","v1","a0","a1","a2","a3","t0","t1","t2","
 #define MFLO	0x12
 #define MTHI	0x11
 #define MTLO	0x13
+#define LUI		0x0F
+
 
 // Control Flow
 
@@ -200,7 +201,7 @@ void rdump() {
 	printf("[Register]\t[Value]\n");
 	printf("-------------------------------------\n");
 	for (i = 0; i < MIPS_REGS; i++){
-		printf("[R%d]\t: 0x%08x\n", i, CURRENT_STATE.REGS[i]);
+		printf("[R%d]\t: 0x%08x\n", i, CURRENT_STATE.R[i]);
 	}
 	printf("-------------------------------------\n");
 	printf("[HI]\t: 0x%08x\n", CURRENT_STATE.HI);
@@ -264,8 +265,8 @@ void handle_command() {
 			if (scanf("%u %i", &register_no, &register_value) != 2){
 				break;
 			}
-			CURRENT_STATE.REGS[register_no] = register_value;
-			NEXT_STATE.REGS[register_no] = register_value;
+			CURRENT_STATE.R[register_no] = register_value;
+			NEXT_STATE.R[register_no] = register_value;
 			break;
 		case 'H':
 		case 'h':
@@ -300,7 +301,7 @@ void reset() {
 	int i;
 	/*reset registers*/
 	for (i = 0; i < MIPS_REGS; i++){
-		CURRENT_STATE.REGS[i] = 0;
+		CURRENT_STATE.R[i] = 0;
 	}
 	CURRENT_STATE.HI = 0;
 	CURRENT_STATE.LO = 0;
@@ -368,122 +369,122 @@ void load_program() {
 
 void add(int rs, int rt, int rd)
 {
-	R[rd] = R[rs] + R[rt];
+	CURRENT_STATE.R[rd] = CURRENT_STATE.R[rs] + CURRENT_STATE.R[rt];
 }
 void addu(int rs, int rt, int rd)
 {
-	unsigned int urs = (unsigned int)R[rs];
-	unsigned int urt = (unsigned int)R[rt];
-	unsigned int urd = (unsigned int)R[rd];
-	R[urd] = R[urs] + R[urt];
+	unsigned int urs = (unsigned int)CURRENT_STATE.R[rs];
+	unsigned int urt = (unsigned int)CURRENT_STATE.R[rt];
+	unsigned int urd = (unsigned int)CURRENT_STATE.R[rd];
+	CURRENT_STATE.R[urd] = CURRENT_STATE.R[urs] + CURRENT_STATE.R[urt];
 }
 void addi(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
-	R[rt] = R[rs] + value; 
+	CURRENT_STATE.R[rt] = CURRENT_STATE.R[rs] + value; 
 }
 void addiu(int rs, int rt, uint32_t address)
 {
 	uint32_t value = mem_read_32(address);
-	R[rt] = R[rs] + value;
+	CURRENT_STATE.R[rt] = CURRENT_STATE.R[rs] + value;
 }
 void sub(int rs, int rt, int rd)
 {
-	R[rd] = R[rs] - R[rt];
+	CURRENT_STATE.R[rd] = CURRENT_STATE.R[rs] - CURRENT_STATE.R[rt];
 }
 void subu(int rs, int rt, int rd)
 {
-	unsigned int urs = (unsigned int)R[rs];
-	unsigned int urt = (unsigned int)R[rt];
-	unsigned int urd = (unsigned int)R[rd];
-	R[urd] = R[urs] - R[urt]; 
+	unsigned int urs = (unsigned int)CURRENT_STATE.R[rs];
+	unsigned int urt = (unsigned int)CURRENT_STATE.R[rt];
+	unsigned int urd = (unsigned int)CURRENT_STATE.R[rd];
+	CURRENT_STATE.R[urd] = CURRENT_STATE.R[urs] - CURRENT_STATE.R[urt]; 
 }
 void mult(int rs, int rt, int rd)
 {
-	int value = R[rs] * R[rt];
+	int value = CURRENT_STATE.R[rs] * CURRENT_STATE.R[rt];
 	CURRENT_STATE.HI = 32 >> value;
 	CURRENT_STATE.LO = 32 << value;
 }
 void multu(int rs, int rt, int rd)
 {
-	unsigned int urt = (unsigned int)R[rt];
-	unsigned int urs = (unsigned int)R[rd];
-	int value = R[urs] * R[urt];
+	unsigned int urt = (unsigned int)CURRENT_STATE.R[rt];
+	unsigned int urs = (unsigned int)CURRENT_STATE.R[rd];
+	int value = CURRENT_STATE.R[urs] * CURRENT_STATE.R[urt];
 	CURRENT_STATE.HI = 32 >> value;
 	CURRENT_STATE.LO = 32 << value;
 }
 void div1(int rs, int rt, int rd)
 {
-	CURRENT_STATE.HI = R[rs] % R[rt];
-	CURRENT_STATE.LO = R[rs] / R[rt];
+	CURRENT_STATE.HI = CURRENT_STATE.R[rs] % CURRENT_STATE.R[rt];
+	CURRENT_STATE.LO = CURRENT_STATE.R[rs] / CURRENT_STATE.R[rt];
 }
 void divu(int rs, int rt, int rd)
 {
-	unsigned int urs = (unsigned int)R[rs];
-	unsigned int urt = (unsigned int)R[rt];
-	unsigned int urd = (unsigned int)R[rd];
-	CURRENT_STATE.HI = R[urs] % R[urt];
-	CURRENT_STATE.LO = R[urs] / R[urt];
+	unsigned int urs = (unsigned int)CURRENT_STATE.R[rs];
+	unsigned int urt = (unsigned int)CURRENT_STATE.R[rt];
+	unsigned int urd = (unsigned int)CURRENT_STATE.R[rd];
+	CURRENT_STATE.HI = CURRENT_STATE.R[urs] % CURRENT_STATE.R[urt];
+	CURRENT_STATE.LO = CURRENT_STATE.R[urs] / CURRENT_STATE.R[urt];
 }
 void and(int rs, int rt, int rd)
 {
-	R[rd] = R[rs] && R[rt];
+	CURRENT_STATE.R[rd] = CURRENT_STATE.R[rs] && CURRENT_STATE.R[rt];
 }
 void andi(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
-	unsigned int urs = (unsigned int)R[rs];
-	unsigned int urt = (unsigned int)R[rt];
-	R[urt] = R[urs] && value;
+	unsigned int urs = (unsigned int)CURRENT_STATE.R[rs];
+	unsigned int urt = (unsigned int)CURRENT_STATE.R[rt];
+	CURRENT_STATE.R[urt] = CURRENT_STATE.R[urs] && value;
 }
 void or(int rs, int rt, int rd)
 {
-	R[rd] = R[rs] || R[rt];
+	CURRENT_STATE.R[rd] = CURRENT_STATE.R[rs] || CURRENT_STATE.R[rt];
 }
 void ori(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
-	unsigned int urs = (unsigned int)R[rs];
-	unsigned int urt = (unsigned int)R[rt];
-	R[urt] = R[urs] || value;
+	unsigned int urs = (unsigned int)CURRENT_STATE.R[rs];
+	unsigned int urt = (unsigned int)CURRENT_STATE.R[rt];
+	CURRENT_STATE.R[urt] = CURRENT_STATE.R[urs] || value;
 }
 void xor(int rs, int rt, int rd)
 {
-	R[rd] = (R[rs] ^ R[rt]);
+	CURRENT_STATE.R[rd] = (CURRENT_STATE.R[rs] ^ CURRENT_STATE.R[rt]);
 }
 void xori(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
-	unsigned int urs = (unsigned int)R[rs];
-	unsigned int urt = (unsigned int)R[rt];
-	R[urt] = (R[urs] ^ value);
+	unsigned int urs = (unsigned int)CURRENT_STATE.R[rs];
+	unsigned int urt = (unsigned int)CURRENT_STATE.R[rt];
+	CURRENT_STATE.R[urt] = (CURRENT_STATE.R[urs] ^ value);
 }
 void nor(int rs, int rt, int rd)
 {
-	R[rd] = ~(R[rs] | R[rt]);
+	CURRENT_STATE.R[rd] = ~(CURRENT_STATE.R[rs] | CURRENT_STATE.R[rt]);
 }
 void slt(int rs, int rt, int rd)
 {
-	R[rd] = (R[rs] < R[rt]);
+	CURRENT_STATE.R[rd] = (CURRENT_STATE.R[rs] < CURRENT_STATE.R[rt]);
 }
 void slti(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
-	unsigned int urs = (unsigned int)R[rs];
-	unsigned int urt = (unsigned int)R[rt];
-	R[urt] = (R[urs] < value);
+	unsigned int urs = (unsigned int)CURRENT_STATE.R[rs];
+	unsigned int urt = (unsigned int)CURRENT_STATE.R[rt];
+	CURRENT_STATE.R[urt] = (CURRENT_STATE.R[urs] < value);
 }
 void sll(int rs, int rt, int shamt)
 {
-	R[rt] = R[rs] << R[shamt];
+	CURRENT_STATE.R[rt] = CURRENT_STATE.R[rs] << CURRENT_STATE.R[shamt];
 }
 void srl(int rs, int rt, int rd)
 {
-	R[rd] = R[rs] << R[rt];
+	CURRENT_STATE.R[rd] = CURRENT_STATE.R[rs] << CURRENT_STATE.R[rt];
 }
 void sra(int rs, int rt, int shamt)
 {
-	R[rt] = R[rs] >> R[shamt];
+	CURRENT_STATE.R[rt] = CURRENT_STATE.R[rs] >> CURRENT_STATE.R[shamt];
 }
 
 /*****************************************************************/
@@ -494,68 +495,68 @@ void lw(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
 	unsigned short SignExtImmm = value & 0xFFFF;
-	R[rt] = R[rs] + SignExtImmm;
+	CURRENT_STATE.R[rt] = CURRENT_STATE.R[rs] + SignExtImmm;
 
 }
 void lb(int rs, int rt, uint32_t address)
 {
-	 //R[rt-1] = {24'b0, M[R[rs-1] + SignExtImm](7:0)}
+	 //CURRENT_STATE.R[rt-1] = {24'b0, M[CURRENT_STATE.R[rs-1] + SignExtImm](7:0)}
 	 int32_t value = mem_read_32(address);
 	 unsigned short SignExtImmm = value & 0xFFFF;
-	 unsigned int urs = (unsigned int)R[rs];
-	 unsigned int urt = (unsigned int)R[rt];
-	 R[rt] = R[rs] + SignExtImmm;
-	 R[rt] >> 24;
+	 unsigned int urs = (unsigned int)CURRENT_STATE.R[rs];
+	 unsigned int urt = (unsigned int)CURRENT_STATE.R[rt];
+	 CURRENT_STATE.R[rt] = CURRENT_STATE.R[rs] + SignExtImmm;
+	 CURRENT_STATE.R[rt] >> 24;
 }
 
 void lh(int rs, int rt, uint32_t address)
 {
-	//R[rt-1] = {16'b0, M[R[rs-1] + SignExtImm](15:0)}
+	//CURRENT_STATE.R[rt-1] = {16'b0, M[CURRENT_STATE.R[rs-1] + SignExtImm](15:0)}
 	int32_t value = mem_read_32(address);
 	unsigned short SignExtImmm = value & 0xFFFF;
 	//printf("This is %d\n", SignExtImmm);
-	R[rt] = R[rs] + SignExtImmm;
-	R[rt] >> 16;
+	CURRENT_STATE.R[rt] = CURRENT_STATE.R[rs] + SignExtImmm;
+	CURRENT_STATE.R[rt] >> 16;
 }
 void lui(int rt, uint32_t address)
 {
-	//R[rt-1] = {imm, 16'b0}
+	//CURRENT_STATE.R[rt-1] = {imm, 16'b0}
 	//$1 = 100x2^16
 	int32_t value = mem_read_32(address);
 	unsigned short SignExtImmm = value & 0xFFFF;
-	R[rt] = SignExtImmm >> 16;
+	CURRENT_STATE.R[rt] = SignExtImmm >> 16;
 }
 void sw(int rs, int rt, uint32_t address)
 {
 	int32_t value = mem_read_32(address);
 	unsigned short SignExtImmm = value & 0xFFFF;
-	R[rt] = R[rs] + SignExtImmm;
-	//M[R[rs-1] + SignExtImm] = R[rt-1]
+	CURRENT_STATE.R[rt] = CURRENT_STATE.R[rs] + SignExtImmm;
+	//M[CURRENT_STATE.R[rs-1] + SignExtImm] = CURRENT_STATE.R[rt-1]
 }
 void sb(int rs, int rt, uint32_t address)
 {
-	//M[R[rs-1]+SignExtImm](7:0) = R[rt-1](7:0)
+	//M[CURRENT_STATE.R[rs-1]+SignExtImm](7:0) = CURRENT_STATE.R[rt-1](7:0)
 	int32_t value = mem_read_32(address);
 	unsigned short SignExtImmm = value & 0xFFFF;
-	R[rt] = R[rs] + SignExtImmm;
+	CURRENT_STATE.R[rt] = CURRENT_STATE.R[rs] + SignExtImmm;
 }
 void sh(int rs, int rt, uint32_t address)
 {
-	//M[R[rs-1]+SignExtImm](15:0) = R[rt-1](15:0)
+	//M[CURRENT_STATE.R[rs-1]+SignExtImm](15:0) = CURRENT_STATE.R[rt-1](15:0)
 	int32_t value = mem_read_32(address);
 	unsigned short SignExtImmm = value & 0xFFFF;
-	R[rt] = R[rs] + SignExtImmm;
+	CURRENT_STATE.R[rt] = CURRENT_STATE.R[rs] + SignExtImmm;
 }
 void mfhi(int rd)
 {
-	//R[rd-1] = Hi
-	R[rd] = CURRENT_STATE.HI;
+	//CURRENT_STATE.R[rd-1] = Hi
+	CURRENT_STATE.R[rd] = CURRENT_STATE.HI;
 }
 void mflo(int rd)
 {
-	//R[rd] = Lo
+	//CURRENT_STATE.R[rd] = Lo
 	
-	R[rd] = CURRENT_STATE.LO;
+	CURRENT_STATE.R[rd] = CURRENT_STATE.LO;
 }
 
 
@@ -567,14 +568,14 @@ void mflo(int rd)
 
 void beq(int rs, int rt, uint32_t b_address)
 {
-	if(R[rs] == R[rt])
+	if(CURRENT_STATE.R[rs] == CURRENT_STATE.R[rt])
 	{
 		CURRENT_STATE.PC = CURRENT_STATE.PC + 4 + b_address;
 	}
 }
 void bne(int rs, int rt, uint32_t b_address)
 {
-	if(R[rs] != R[rt])
+	if(CURRENT_STATE.R[rs] != CURRENT_STATE.R[rt])
 	{
 		CURRENT_STATE.PC = CURRENT_STATE.PC + 4 + b_address;
 
@@ -583,7 +584,7 @@ void bne(int rs, int rt, uint32_t b_address)
 void blez(int rs, int rt, int label)
 {
 	//ble
-	if(R[rs] <= R[rt])
+	if(CURRENT_STATE.R[rs] <= CURRENT_STATE.R[rt])
 	{
 		CURRENT_STATE.PC = label;
 	}
@@ -591,7 +592,7 @@ void blez(int rs, int rt, int label)
 void bltz(int rs, int rt, int label)
 {
 	//blt
-	if(R[rs] < R[rt])
+	if(CURRENT_STATE.R[rs] < CURRENT_STATE.R[rt])
 	{
 		CURRENT_STATE.PC = label;
 	}
@@ -602,15 +603,15 @@ void j(uint32_t j_address)
 }
 void jr(uint32_t j_address, int rs)
 {
-	CURRENT_STATE.PC = R[rs];
+	CURRENT_STATE.PC = CURRENT_STATE.R[rs];
 }
 void jal(uint32_t j_address)
 {
-	R[31] = CURRENT_STATE.PC + 8; CURRENT_STATE.PC = j_address;
+	CURRENT_STATE.R[31] = CURRENT_STATE.PC + 8; CURRENT_STATE.PC = j_address;
 }
 void jalr(uint32_t j_address, int rs)
 {
-	R[31] = CURRENT_STATE.PC + 8; CURRENT_STATE.PC = R[rs];
+	CURRENT_STATE.R[31] = CURRENT_STATE.PC + 8; CURRENT_STATE.PC = CURRENT_STATE.R[rs];
 }
 
 
@@ -632,7 +633,7 @@ void fill_reg()
 	int i = 0;
 	while(i < 32)
 	{
-		R[i] = 0;
+		CURRENT_STATE.R[i] = 0;
 		i++;
 	}
 }
@@ -659,7 +660,6 @@ void parseInstruction(uint32_t addr)
 	
 	int opCode = mem_read_32(addr) >> 26;
 	int data = mem_read_32(addr);
-
 	//R-type format
 	if (opCode == 0)
 	{	
@@ -669,8 +669,8 @@ void parseInstruction(uint32_t addr)
 		int rt = (data >> 16) & 0x1f;
 		int rd = (data >> 11) & 0x1f;
 		int sa = (data >> 6) & 0x1f;
-		int func = (data >> 0) & 0x1f;
-	
+		int func = data & 0x3f;
+
 		if (func == ADD)
 		{
 			add(rs,rt,rd);
@@ -776,6 +776,7 @@ void parseInstruction(uint32_t addr)
 			}
 			else if (opCode == ADDIU)
 			{
+			
 			addiu(rs,rt,immediate);
 
 			}
@@ -833,11 +834,11 @@ void parseInstruction(uint32_t addr)
 void handle_instruction()
 {
 	//int i;
-	uint32_t addr;
-		
+	uint32_t addr = CURRENT_STATE.PC;
+	//printf("%0x",addr);
 	parseInstruction(addr);
-	CURRENT_STATE = NEXT_STATE;
-
+	CURRENT_STATE.PC = CURRENT_STATE.PC + 0x04;
+	NEXT_STATE.PC = CURRENT_STATE.PC;
 }
 /************************************************************/
 /* Initialize Memory                                                                                                    */ 
@@ -870,8 +871,7 @@ void print_instruction(uint32_t addr){
 	
 	int opCode = mem_read_32(addr) >> 26;
 	int data = mem_read_32(addr);
-	//printf("data" "%d" "\n ",data);
-	//printf("opcode" "%d" "\n ",opCode);
+
 	//R-type format
 	if (opCode == 0)
 	{	
@@ -879,15 +879,10 @@ void print_instruction(uint32_t addr){
 
 		int rs = (data >> 21) & 0x1f;
 		int rt = (data >> 16) & 0x1f;
-		//printf("%d",rs);
 		int rd = (data >> 11) & 0x1f;
 		int sa = (data >> 6) & 0x1f;
 		int func = data & 0x3f;
-		//printf("%d\n",data);
-		//printf("%d",func);
-		//func = func >> 26;
-		//printf("function:" "%d" "\n" ,func);
-		int i=0;
+
 		if (func == ADD)
 		{
 			printf("ADD ");
@@ -1124,6 +1119,12 @@ void print_instruction(uint32_t addr){
 			else if (opCode == MTLO)
 			{
 			//	mtlo(rs,rt,immediate);
+			}
+			else if (opCode == LUI)
+			{
+			printf("LUI ");
+			printf("%s, ", RegNames[rt-1]);
+			printf("%04x\n", immediate);
 			}
 		}
 	
