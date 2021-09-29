@@ -130,7 +130,7 @@ void mem_write_32(uint32_t address, uint32_t value)
 /***************************************************************/
 void cycle() {                                                
 	handle_instruction();
-	CURRENT_STATE = NEXT_STATE;
+	//CURRENT_STATE = NEXT_STATE;
 	INSTRUCTION_COUNT++;
 }
 
@@ -369,7 +369,7 @@ void load_program() {
 
 void add(int rs, int rt, int rd)
 {
-	CURRENT_STATE.R[rd] = CURRENT_STATE.R[rs] + CURRENT_STATE.R[rt];
+	CURRENT_STATE.R[rd] = rs + rt;
 }
 void addu(int rs, int rt, int rd)
 {
@@ -633,7 +633,7 @@ void fill_reg()
 	int i = 0;
 	while(i < 32)
 	{
-		CURRENT_STATE.R[i] = 0;
+		CURRENT_STATE.R[i] = 5;
 		i++;
 	}
 }
@@ -838,7 +838,7 @@ void handle_instruction()
 	//printf("%0x",addr);
 	parseInstruction(addr);
 	CURRENT_STATE.PC = CURRENT_STATE.PC + 0x04;
-	NEXT_STATE.PC = CURRENT_STATE.PC;
+	//NEXT_STATE.PC = CURRENT_STATE.PC;
 }
 /************************************************************/
 /* Initialize Memory                                                                                                    */ 
@@ -1144,6 +1144,7 @@ int main(int argc, char *argv[]) {
 
 	strcpy(prog_file, argv[1]);
 	initialize();
+	fill_reg();
 	load_program();
 	help();
 	while (1){
