@@ -488,25 +488,26 @@ void sra(int rs, int rt, int shamt)
 }
 
 /*****************************************************************/
-/* Load and store instructions
+/* Load and store instructions - J
 *****************************************************************/
 
 void lw(int rs, int rt, uint32_t address)
 {
-	int32_t value = mem_read_32(address);
+	int32_t value = mem_read_32(address); 
 	unsigned short SignExtImmm = value & 0xFFFF;
 	CURRENT_STATE.R[rt] = CURRENT_STATE.R[rs] + SignExtImmm;
-
 }
-void lb(int rs, int rt, uint32_t address)
+
+void lb(int rs, int rt, uint32_t address) 
 {
-	 //CURRENT_STATE.R[rt-1] = {24'b0, M[CURRENT_STATE.R[rs-1] + SignExtImm](7:0)}
+	 // R[rt] = {24'b0, MR[rs] + SignExtImm](7:0)}
 	 int32_t value = mem_read_32(address);
 	 unsigned short SignExtImmm = value & 0xFFFF;
 	 unsigned int urs = (unsigned int)CURRENT_STATE.R[rs];
 	 unsigned int urt = (unsigned int)CURRENT_STATE.R[rt];
 	 CURRENT_STATE.R[rt] = CURRENT_STATE.R[rs] + SignExtImmm;
-	 CURRENT_STATE.R[rt] >> 24;
+	 CURRENT_STATE.R[rt] >> 24; 
+	 
 }
 
 void lh(int rs, int rt, uint32_t address)
@@ -518,13 +519,14 @@ void lh(int rs, int rt, uint32_t address)
 	CURRENT_STATE.R[rt] = CURRENT_STATE.R[rs] + SignExtImmm;
 	CURRENT_STATE.R[rt] >> 16;
 }
+
 void lui(int rt, uint32_t address)
 {
 	//CURRENT_STATE.R[rt-1] = {imm, 16'b0}
 	//$1 = 100x2^16
 	int32_t value = mem_read_32(address);
 	unsigned short SignExtImmm = value & 0xFFFF;
-	CURRENT_STATE.R[rt] = SignExtImmm >> 16;
+	CURRENT_STATE.R[rt] = SignExtImmm >> 16; 
 }
 void sw(int rs, int rt, uint32_t address)
 {
@@ -560,10 +562,8 @@ void mflo(int rd)
 }
 
 
-
-
 /****************************************************************/
-/* Control Flow Instructions
+/* Control Flow Instructions - J
 ****************************************************************/
 
 void beq(int rs, int rt, uint32_t b_address)
@@ -648,18 +648,13 @@ void fill_reg()
 /* set the temp registers with the 
 ***********************************************************/
 
-
-
-
-
 	/*IMPLEMENT THIS*/
 	/* execute one instruction at a time. Use/update CURRENT_STATE and and NEXT_STATE, as necessary.*/
 
-void parseInstruction(uint32_t addr)
+void parseInstruction(uint32_t addr) 
 {
-	
 	int opCode = mem_read_32(addr) >> 26;
-	int data = mem_read_32(addr);
+	int data = mem_read_32(addr); 
 	//R-type format
 	if (opCode == 0)
 	{	
@@ -670,6 +665,8 @@ void parseInstruction(uint32_t addr)
 		int rd = (data >> 11) & 0x1f;
 		int sa = (data >> 6) & 0x1f;
 		int func = data & 0x3f;
+		// int func = opCode << 26;
+		// func = func >> 26;
 
 		if (func == ADD)
 		{
@@ -747,7 +744,7 @@ void parseInstruction(uint32_t addr)
 		}
 		
 	}
-	
+
 	//I format
 	else {
 			int rs = (data >> 21) & 0x1f;
@@ -826,7 +823,6 @@ void parseInstruction(uint32_t addr)
 			//	mtlo(rs,rt,immediate);
 			}
 		}
-		
 }
 /************************************************************/
 /* decode and execute instruction                                                                     */ 
@@ -882,6 +878,8 @@ void print_instruction(uint32_t addr){
 		int rd = (data >> 11) & 0x1f;
 		int sa = (data >> 6) & 0x1f;
 		int func = data & 0x3f;
+		// int func = opCode << 26;
+		// func = func >> 26;
 
 		if (func == ADD)
 		{
@@ -895,9 +893,7 @@ void print_instruction(uint32_t addr){
 			printf("ADDU ");
 			printf("%s, ", RegNames[rs-1]);
 			printf("%s, ", RegNames[rt-1]);
-			printf("%s\n", RegNames[rd-1]);
-			
-
+			printf("%s\n", RegNames[rd-1]);			
 		}
 		
 		else if (func == SUB)
